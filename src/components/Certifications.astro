@@ -6,9 +6,10 @@
  * file names. Clicking a card opens an accessible larger preview modal.
  *
  * No Google Drive UI is shown to visitors (no folder iframe, toolbar, or
- * sign-in box). When `PUBLIC_GOOGLE_DRIVE_API_KEY` is not set, a polished empty
- * state renders instead, and the gallery is ready to populate once the key and
- * public folder sharing are in place (see README).
+ * sign-in box). When `PUBLIC_GOOGLE_DRIVE_API_KEY` is not set, the ENTIRE
+ * section is hidden (nothing renders) so visitors never see an unfinished
+ * gallery. The moment the key (and public folder sharing) are in place, the
+ * section appears automatically (see README).
  */
 import { certifications } from "../data/site";
 
@@ -17,6 +18,7 @@ const env = import.meta.env as Record<string, string | undefined>;
 const apiKey = env.PUBLIC_GOOGLE_DRIVE_API_KEY ?? "";
 const ready = certifications.enabled && Boolean(apiKey);
 ---
+{ready && (
 <section class="section section--alt certs" id={certifications.id}>
   <div class="container">
     <div class="section-head section-head--center section-head--wide reveal">
@@ -25,24 +27,15 @@ const ready = certifications.enabled && Boolean(apiKey);
       <p class="lead" style="margin-top:14px">{certifications.intro}</p>
     </div>
 
-    {ready ? (
-      <div class="certs__grid reveal" data-cert-grid data-folder={folderId} data-key={apiKey}>
-        <div class="certs__state" data-cert-state>
-          <span class="certs__spinner" aria-hidden="true"></span>
-          <span data-cert-msg>Loading certifications…</span>
-        </div>
+    <div class="certs__grid reveal" data-cert-grid data-folder={folderId} data-key={apiKey}>
+      <div class="certs__state" data-cert-state>
+        <span class="certs__spinner" aria-hidden="true"></span>
+        <span data-cert-msg>Loading certifications…</span>
       </div>
-    ) : (
-      <div class="certs__empty reveal">
-        <span class="certs__empty-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5" /></svg>
-        </span>
-        <p class="certs__empty-title">Certification gallery is being connected.</p>
-      </div>
-    )}
+    </div>
   </div>
 
-  <!-- Accessible preview modal (shared by all cards) -->
+  {/* Accessible preview modal (shared by all cards) */}
   <div class="certmodal" data-cert-modal hidden>
     <div class="certmodal__backdrop" data-cert-close></div>
     <div class="certmodal__dialog" role="dialog" aria-modal="true" aria-label="Certificate preview" tabindex="-1" data-cert-dialog>
@@ -54,6 +47,7 @@ const ready = certifications.enabled && Boolean(apiKey);
     </div>
   </div>
 </section>
+)}
 
 <style>
   .certs__grid {

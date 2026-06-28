@@ -38,8 +38,8 @@ export const site = {
  * those links stay hidden until a real URL is provided.
  */
 export const social = {
-  linkedin: "", // e.g. "https://www.linkedin.com/in/your-handle"
-  github: "",   // e.g. "https://github.com/your-username"
+  linkedin: "https://www.linkedin.com/in/cristen-joy-dimaguila-984311193",
+  github: "",   // e.g. "https://github.com/your-username" — stays hidden until a real URL is set
 } as const;
 
 /**
