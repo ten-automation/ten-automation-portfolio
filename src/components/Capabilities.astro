@@ -1,0 +1,89 @@
+---
+/**
+ * Capabilities: a centered, balanced grid of capability cards that fade, rise,
+ * and subtly scale in one by one on scroll.
+ */
+import type { Accent, IconPaths } from "../lib/types";
+import Icon from "./Icon.astro";
+
+interface Card {
+  title: string;
+  desc: string;
+  accent: Accent;
+  icon: IconPaths;
+}
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  cards: Card[];
+}
+const { eyebrow, title, intro, cards } = Astro.props;
+---
+<section class="section section--alt caps">
+  <div class="container">
+    <div class="section-head section-head--center section-head--wide reveal">
+      <span class="eyebrow eyebrow--accent">{eyebrow}</span>
+      <h2 class="display">{title}</h2>
+      <p class="lead" style="margin-top:14px">{intro}</p>
+    </div>
+
+    <div class="caps__grid">
+      {cards.map((card, i) => (
+        <article class:list={["capcard", `accent-${card.accent}`, "reveal-cap"]} style={`--reveal-delay:${(i * 0.07).toFixed(2)}s`}>
+          <span class="capcard__icon"><Icon paths={card.icon} size={22} /></span>
+          <h3 class="capcard__title">{card.title}</h3>
+          <p class="capcard__desc">{card.desc}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .caps__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(14px, 1.8vw, 20px);
+    max-width: 1140px;
+    margin-inline: auto;
+  }
+  .capcard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--card-border-strong);
+    border-radius: 18px;
+    padding: clamp(20px, 2vw, 26px);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+  }
+  .capcard.is-visible:hover { transform: translateY(-5px); box-shadow: 0 26px 56px rgba(64, 90, 180, 0.16); border-color: var(--card-border-hover); }
+  .capcard__icon {
+    width: 46px; height: 46px; border-radius: 13px; flex: 0 0 auto;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 18px var(--accent-glow);
+  }
+  .capcard__title { font-size: 16.5px; line-height: 1.25; letter-spacing: -0.01em; color: var(--ink); }
+  .capcard__desc { font-size: 13.5px; line-height: 1.55; color: var(--body); }
+
+  /* Sequential reveal: fade + rise + subtle scale. */
+  .reveal-cap {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+  }
+  .reveal-cap.is-visible { opacity: 1; transform: none; }
+
+  @media (max-width: 1080px) { .caps__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 760px) { .caps__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 440px) { .caps__grid { grid-template-columns: 1fr; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-cap { opacity: 1 !important; transform: none !important; }
+  }
+</style>

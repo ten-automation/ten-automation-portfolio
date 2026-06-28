@@ -1,0 +1,46 @@
+---
+/** Side-by-side problem (lilac) / solution (mint) cards. */
+interface Props {
+  problem: { title: string; body: string };
+  solution: { title: string; body: string };
+}
+const { problem, solution } = Astro.props;
+---
+<section class="section section--alt">
+  <div class="container ps">
+    <div class="ps__card reveal">
+      <div class="ps__eyebrow ps__eyebrow--problem"><span></span>Business problem</div>
+      <h2 class="ps__title">{problem.title}</h2>
+      <p class="ps__body">{problem.body}</p>
+    </div>
+    <div class="ps__card ps__card--solution reveal" style="--reveal-delay:0.08s">
+      <div class="ps__eyebrow ps__eyebrow--solution"><span></span>Automation solution</div>
+      <h2 class="ps__title">{solution.title}</h2>
+      <p class="ps__body">{solution.body}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ps { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .ps__card {
+    background: #fff;
+    border: 1px solid var(--card-border-strong);
+    border-radius: 24px;
+    padding: clamp(26px, 3vw, 40px);
+    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1);
+  }
+  .ps__card--solution { background: linear-gradient(150deg, #ffffff 58%, #f1fbf6); border-color: var(--benefit-border); }
+  .ps__eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: var(--radius-pill); padding: 7px 14px; margin-bottom: 18px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .ps__eyebrow span { width: 7px; height: 7px; border-radius: 50%; }
+  .ps__eyebrow--problem { background: var(--lilac-bg); color: var(--lilac-ink); }
+  .ps__eyebrow--problem span { background: var(--lilac-ink); }
+  .ps__eyebrow--solution { background: var(--mint-bg); color: var(--mint-ink); }
+  .ps__eyebrow--solution span { background: var(--mint-ink); }
+  .ps__title { font-size: clamp(22px, 2.6vw, 30px); line-height: 1.14; margin-bottom: 14px; }
+  .ps__body { font-size: 15.5px; line-height: 1.6; color: var(--body); }
+</style>

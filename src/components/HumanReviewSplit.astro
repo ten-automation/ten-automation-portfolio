@@ -1,0 +1,87 @@
+---
+/**
+ * "What automation handles" vs "What a human handles" split — central to the
+ * honesty requirement that workflows aren't claimed fully automatic.
+ */
+import type { HumanReview } from "../lib/types";
+
+interface Props {
+  data: HumanReview;
+  eyebrow?: string;
+  title?: string;
+}
+const { data, eyebrow = "Human review", title = "Prepared by automation, approved by a person." } = Astro.props;
+const checkPath = "M20 6 9 17l-5-5";
+---
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--wide reveal">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2 class="display">{title}</h2>
+      <p class="lead" style="margin-top:14px">{data.intro}</p>
+    </div>
+    <div class="hr">
+      <div class="hr__card hr__card--auto reveal">
+        <div class="hr__head">
+          <span class="hr__icon hr__icon--auto">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8" /><rect x="4" y="8" width="16" height="12" rx="2" /><path d="M2 14h2M20 14h2M15 13v2M9 13v2" /></svg>
+          </span>
+          <h3 class="hr__title">{data.automation.title}</h3>
+        </div>
+        <ul class="hr__list">
+          {data.automation.items.map((item) => (
+            <li class="hr__item hr__item--auto">
+              <span class="hr__check hr__check--auto"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d={checkPath} /></svg></span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="hr__card hr__card--human reveal" style="--reveal-delay:0.08s">
+        <div class="hr__head">
+          <span class="hr__icon hr__icon--human">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+          </span>
+          <h3 class="hr__title">{data.human.title}</h3>
+        </div>
+        <ul class="hr__list">
+          {data.human.items.map((item) => (
+            <li class="hr__item hr__item--human">
+              <span class="hr__check hr__check--human"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d={checkPath} /></svg></span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hr { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: stretch; }
+  .hr__card {
+    background: linear-gradient(150deg, #ffffff 58%, #f1f6ff);
+    border: 1px solid var(--card-border-strong);
+    border-radius: 24px;
+    padding: clamp(24px, 2.8vw, 36px);
+    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1);
+  }
+  .hr__card--human { background: linear-gradient(150deg, #ffffff 58%, #f1fbf6); border-color: var(--benefit-border); }
+  .hr__head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .hr__icon { width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .hr__icon--auto { background: var(--peri-bg); color: var(--peri-ink); box-shadow: 0 8px 18px var(--peri-glow); }
+  .hr__icon--human { background: var(--mint-bg); color: var(--mint-ink); box-shadow: 0 8px 18px var(--mint-glow); }
+  .hr__title { font-size: 21px; }
+  .hr__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .hr__item {
+    display: flex; align-items: center; gap: 11px;
+    border-radius: 13px; padding: 13px 15px;
+    font-weight: 600; font-size: 14.5px; color: #2b3566;
+  }
+  .hr__item--auto { background: #f7f9ff; border: 1px solid rgba(170, 185, 246, 0.28); }
+  .hr__item--human { background: #f4fbf8; border: 1px solid rgba(143, 226, 198, 0.4); }
+  .hr__check { width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .hr__check--auto { background: var(--peri-bg); color: var(--peri-ink); }
+  .hr__check--human { background: var(--mint-bg); color: var(--mint-ink); }
+</style>

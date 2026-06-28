@@ -1,0 +1,189 @@
+---
+/**
+ * Discovery Call — the most visually prominent section, built entirely around
+ * the Calendly scheduler. There is NO separate website form: the pre-call
+ * questions live inside Calendly as invitee questions, so a visitor picks a
+ * time and then answers the questions right on the Calendly booking screen.
+ *
+ * Booking is driven by the editable config in src/data/site.ts:
+ *   - Routing Form URL present  -> embed the routing form (preferred flow).
+ *   - Normal event link present -> embed the event (time -> questions -> book).
+ *   - Nothing configured        -> a polished placeholder (no fake booking).
+ *
+ * To make the questionnaire part of Calendly, add the questions from
+ * src/data/home.ts (`discoveryCall.questionGroups`) as Invitee Questions on
+ * your Calendly event (see README). They then appear after the time is chosen.
+ */
+import { site, calendly, calendlyConfigured, calendlyBookingUrl } from "../data/site";
+
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  statement: string;
+  supporting: string;
+  cta: string;
+}
+const { id, eyebrow, title, statement, supporting, cta } = Astro.props;
+
+const bookingConfigured = calendly.discoveryCallEnabled && calendlyConfigured();
+const bookingUrl = calendlyBookingUrl();
+const embedInline = calendly.calendlyEmbedMode === "inline";
+---
+<section class="section dcall" id={id}>
+  <div class="dcall__bg" aria-hidden="true"></div>
+  <div class="container dcall__inner">
+    <div class="dcall__head reveal">
+      <span class="eyebrow eyebrow--accent">{eyebrow}</span>
+      <h2 class="display dcall__title">{title}</h2>
+      <p class="dcall__statement">{statement}</p>
+      <p class="dcall__supporting">{supporting}</p>
+    </div>
+
+    <!-- The Calendly scheduler (booking + questions all happen here) -->
+    <div class="bookwrap reveal" id={`${id}-book`} style="--reveal-delay:0.12s">
+      {bookingConfigured ? (
+        embedInline ? (
+          <div class="bookwrap__embed-shell">
+            <div class="calendly-inline-widget bookwrap__embed" data-url={bookingUrl} data-lazy-calendly></div>
+          </div>
+        ) : (
+          <div class="bookwrap__popup">
+            <p class="bookwrap__popup-lead">Book your discovery call. You will pick a time, then answer a few quick questions in the scheduler.</p>
+            <button type="button" class="btn btn--primary bookwrap__popup-btn" data-calendly-popup data-url={bookingUrl}>
+              <span>{cta}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </button>
+          </div>
+        )
+      ) : (
+        <div class="bookwrap__placeholder">
+          <span class="bookwrap__placeholder-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" /></svg>
+          </span>
+          <p class="bookwrap__placeholder-title">Calendly scheduler goes here</p>
+          <p class="bookwrap__placeholder-copy">
+            Once a real Calendly event link is connected, the full scheduler loads right here. Visitors pick a time and answer the pre-call
+            questions on the Calendly booking screen, so the questionnaire is never separated from the booking.
+          </p>
+          {/* TODO: set `calendly.calendlyUrl` (or `calendlyRoutingFormUrl`) in src/data/site.ts, then add the questions
+               from home.ts `discoveryCall.questionGroups` as Calendly Invitee Questions (see README). */}
+          <a class="bookwrap__placeholder-cta" href={`mailto:${site.email}?subject=${encodeURIComponent("Discovery call request")}`}>
+            Email me to schedule for now
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </div>
+      )}
+
+      {bookingConfigured && (
+        <a class="bookwrap__fallback" href={bookingUrl} target="_blank" rel="noopener noreferrer">
+          Open Calendly in a new tab
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg>
+        </a>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .dcall { position: relative; overflow: hidden; }
+  .dcall__bg {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(900px 480px at 15% 0%, color-mix(in srgb, var(--lilac-glow) 60%, transparent), transparent 70%),
+      radial-gradient(900px 520px at 100% 100%, color-mix(in srgb, var(--peri-glow) 45%, transparent), transparent 72%),
+      linear-gradient(165deg, var(--lav-strong-from), var(--lav-strong-to));
+    border-block: 1px solid var(--lav-border-soft);
+  }
+  .dcall__inner { position: relative; z-index: 1; }
+
+  .dcall__head { max-width: 760px; margin: 0 auto clamp(24px, 3vw, 36px); text-align: center; }
+  .dcall__title { margin-top: 6px; }
+  .dcall__statement { margin-top: 16px; font-family: var(--font-head); font-weight: 600; font-size: clamp(17px, 2vw, 23px); line-height: 1.4; color: var(--ink); letter-spacing: -0.01em; }
+  .dcall__supporting { margin-top: 14px; font-size: clamp(14.5px, 1.3vw, 16.5px); line-height: 1.6; color: var(--body); }
+
+  /* ---- Booking (Calendly) ---- */
+  .bookwrap {
+    max-width: 940px; margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--lav-border);
+    border-radius: 26px;
+    padding: clamp(16px, 2vw, 24px);
+    box-shadow: var(--shadow-panel);
+  }
+  .bookwrap__embed-shell { border-radius: 16px; overflow: hidden; }
+  .bookwrap__embed { min-width: 0; width: 100%; height: 720px; }
+
+  .bookwrap__popup { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: clamp(28px, 4vw, 52px) clamp(18px, 2vw, 28px); }
+  .bookwrap__popup-lead { font-size: 15px; line-height: 1.55; color: var(--body); max-width: 46ch; }
+  .bookwrap__popup-btn { font-size: 17px; padding: 17px 32px; }
+
+  .bookwrap__placeholder {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 13px; padding: clamp(36px, 5vw, 72px) clamp(20px, 3vw, 40px);
+    background: linear-gradient(160deg, var(--lav-soft), var(--surface));
+    border: 1px dashed var(--lav-border); border-radius: 18px;
+  }
+  .bookwrap__placeholder-icon {
+    width: 66px; height: 66px; border-radius: 18px;
+    background: var(--lilac-bg); color: var(--lilac-ink);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bookwrap__placeholder-icon svg { width: 33px; height: 33px; }
+  .bookwrap__placeholder-title { font-family: var(--font-head); font-weight: 800; font-size: clamp(18px, 2vw, 22px); color: var(--ink); }
+  .bookwrap__placeholder-copy { font-size: 14px; line-height: 1.6; color: var(--body); max-width: 52ch; }
+  .bookwrap__placeholder-cta, .bookwrap__fallback {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 14px; font-weight: 600; color: var(--lav-ink); text-decoration: none;
+  }
+  .bookwrap__placeholder-cta { margin-top: 6px; }
+  .bookwrap__placeholder-cta svg, .bookwrap__fallback svg { width: 15px; height: 15px; }
+  .bookwrap__placeholder-cta:hover, .bookwrap__fallback:hover { text-decoration: underline; }
+  .bookwrap__fallback { justify-content: center; width: 100%; margin-top: 14px; }
+</style>
+
+<script is:inline define:vars={{ bookingConfigured }}>
+  /* Lazy-load Calendly only near this section; wire the popup button if used. */
+  (() => {
+    if (!bookingConfigured) return;
+    const section = document.getElementById("discovery-call");
+    if (!section) return;
+
+    let loaded = false;
+    const loadCalendly = () => {
+      if (loaded) return;
+      loaded = true;
+      const css = document.createElement("link");
+      css.rel = "stylesheet";
+      css.href = "https://assets.calendly.com/assets/external/widget.css";
+      document.head.appendChild(css);
+      const js = document.createElement("script");
+      js.src = "https://assets.calendly.com/assets/external/widget.js";
+      js.async = true;
+      document.head.appendChild(js);
+
+      const popupBtn = document.querySelector("[data-calendly-popup]");
+      if (popupBtn) {
+        popupBtn.addEventListener("click", () => {
+          const url = popupBtn.getAttribute("data-url");
+          if (window.Calendly && url) window.Calendly.initPopupWidget({ url });
+        });
+      }
+    };
+
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            loadCalendly();
+            io.disconnect();
+          }
+        },
+        { rootMargin: "400px 0px" },
+      );
+      io.observe(section);
+    } else {
+      loadCalendly();
+    }
+  })();
+</script>

@@ -1,0 +1,77 @@
+---
+/**
+ * Document <head>: SEO metadata, Open Graph / Twitter cards, fonts.
+ * Per-page values fall back to the defaults in src/data/site.ts.
+ */
+import { seoDefaults, site } from "../data/site";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Path to an OG image relative to site root, or absolute URL. */
+  ogImage?: string;
+  /** Set true on non-canonical/utility pages to discourage indexing. */
+  noindex?: boolean;
+}
+
+const { title, description = seoDefaults.description, ogImage = seoDefaults.ogImage, noindex = false } = Astro.props;
+
+const fullTitle = title === seoDefaults.titleSuffix ? title : `${title} - ${seoDefaults.titleSuffix}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const ogImageUrl = new URL(ogImage, Astro.site ?? Astro.url).href;
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="keywords" content={seoDefaults.keywords.join(", ")} />
+<meta name="author" content={site.owner} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.siteName} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${site.owner}, ${site.role}`} />
+<meta property="og:locale" content={seoDefaults.locale} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+<meta name="twitter:image:alt" content={`${site.owner}, ${site.role}`} />
+
+<!-- Theme: set before paint to prevent a flash of the wrong theme. -->
+<script is:inline>
+  (() => {
+    try {
+      const stored = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const theme = stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
+      document.documentElement.dataset.theme = theme;
+    } catch (e) {
+      document.documentElement.dataset.theme = "light";
+    }
+  })();
+</script>
+
+<!-- Icons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="theme-color" content="#f5f5fc" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="sitemap" href="/sitemap-index.xml" />

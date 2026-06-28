@@ -1,0 +1,15 @@
+---
+/** Reusable section header: eyebrow + heading + optional intro. */
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  wide?: boolean;
+}
+const { eyebrow, title, intro, wide = false } = Astro.props;
+---
+<div class:list={["section-head", { "section-head--wide": wide }, "reveal"]}>
+  <span class="eyebrow">{eyebrow}</span>
+  <h2 class="display">{title}</h2>
+  {intro && <p class="lead" style="margin-top:12px">{intro}</p>}
+</div>

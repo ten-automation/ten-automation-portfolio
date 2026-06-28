@@ -1,0 +1,61 @@
+---
+/** Dark gradient final CTA panel with dot-grid texture + glow. */
+import Button from "./Button.astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  buttonLabel: string;
+  buttonHref: string;
+}
+const { eyebrow = "Consultation", title, body, buttonLabel, buttonHref } = Astro.props;
+---
+<section class="section">
+  <div class="container">
+    <div class="cta reveal-scale">
+      <div class="dot-grid cta__dots"></div>
+      <div class="cta__glow"></div>
+      <div class="cta__content">
+        <div class="cta__eyebrow"><span class="cta__eyebrow-dot"></span><span>{eyebrow}</span></div>
+        <h2 class="cta__title">{title}</h2>
+        <p class="cta__body">{body}</p>
+        <Button href={buttonHref} variant="light">{buttonLabel}</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    position: relative;
+    max-width: 1080px;
+    margin-inline: auto;
+    background: var(--grad-panel);
+    border-radius: 34px;
+    padding: clamp(36px, 5vw, 80px);
+    overflow: hidden;
+    box-shadow: 0 36px 90px rgba(27, 35, 80, 0.36);
+  }
+  .cta__dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.1px, transparent 1.1px);
+    background-size: 24px 24px;
+    opacity: 0.6;
+  }
+  .cta__glow {
+    position: absolute; top: -120px; right: -80px;
+    width: 380px; height: 380px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(143, 226, 198, 0.4), transparent 65%);
+    pointer-events: none;
+  }
+  .cta__content { position: relative; z-index: 2; max-width: 680px; }
+  .cta__eyebrow {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-pill);
+    padding: 8px 15px; margin-bottom: 24px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #cdd8fb;
+  }
+  .cta__eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: #8fe2c6; box-shadow: 0 0 0 4px rgba(143, 226, 198, 0.2); }
+  .cta__title { font-size: clamp(28px, 4.4vw, 56px); line-height: 1.08; color: #fff; margin-bottom: 18px; }
+  .cta__body { font-size: clamp(16px, 1.5vw, 20px); line-height: 1.58; color: #bcc6ec; max-width: 54ch; margin-bottom: 32px; }
+</style>

@@ -1,0 +1,30 @@
+---
+/** Amber caution callout — used for the "outputs aren't guaranteed" note. */
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+<div class="caution reveal">
+  <span class="caution__icon">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+  </span>
+  <p class="caution__text">{text}</p>
+</div>
+
+<style>
+  .caution {
+    display: flex; align-items: flex-start; gap: 13px;
+    margin-top: 24px;
+    background: #fff; border: 1px solid var(--card-border-strong);
+    border-left: 4px solid var(--caution-border);
+    border-radius: 14px; padding: 16px 20px;
+    box-shadow: 0 10px 26px rgba(64, 90, 180, 0.06);
+  }
+  .caution__icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--caution-bg); color: var(--caution-ink);
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto; margin-top: 1px;
+  }
+  .caution__text { font-size: 14px; line-height: 1.55; color: var(--body); }
+</style>

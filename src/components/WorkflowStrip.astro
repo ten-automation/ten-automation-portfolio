@@ -1,0 +1,120 @@
+---
+/**
+ * Compact horizontal "live workflow" strip: accent node boxes joined by
+ * connector lines that attach to the box edges with a sweeping spark.
+ * Signals the control-center feel. Wraps cleanly on small screens.
+ * With `animated`, node boxes pop in one-by-one and the live dot pulses.
+ */
+import type { FlowNode } from "../lib/types";
+
+interface Props {
+  nodes: FlowNode[];
+  label?: string;
+  /** Center the strip (used on the listing hero). */
+  center?: boolean;
+  /** Stagger node entrance + pulse the live dot (used on the home hero). */
+  animated?: boolean;
+}
+const { nodes, label, center = false, animated = false } = Astro.props;
+---
+<div class:list={["strip", { "strip--center": center, "strip--animated": animated }]}>
+  {label && (
+    <div class="strip__label">
+      <span class="strip__live"></span>
+      <span>{label}</span>
+    </div>
+  )}
+  <div class="strip__flow">
+    {nodes.map((node, i) => (
+      <>
+        <span class:list={["strip__node", `accent-${node.accent}`]} style={`--i:${i}`}>
+          <span class="strip__node-dot"></span>{node.label}
+        </span>
+        {i < nodes.length - 1 && (
+          <span class:list={["strip__conn", `accent-${nodes[i + 1].accent}`]} style={`--i:${i}`}>
+            <span class="strip__spark" style={`animation-delay:${(i * 0.5).toFixed(2)}s`}></span>
+          </span>
+        )}
+      </>
+    ))}
+  </div>
+</div>
+
+<style>
+  .strip {
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    padding: 16px clamp(16px, 2.4vw, 28px);
+    box-shadow: 0 14px 36px rgba(91, 113, 170, 0.1);
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.6vw, 18px);
+    flex-wrap: wrap;
+  }
+  .strip--center { justify-content: center; }
+  .strip__label { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+  .strip__live {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #2fae84; box-shadow: 0 0 0 4px rgba(47, 174, 132, 0.16);
+  }
+  .strip--animated .strip__live { animation: live-pulse 2.4s ease-in-out infinite; }
+  .strip__label span:last-child {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #7c86b8;
+  }
+  .strip__flow {
+    flex: 1 1 300px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 0;
+    min-width: 240px;
+  }
+  .strip--center .strip__flow { justify-content: center; }
+  .strip__node {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    font-size: 12px; font-weight: 600;
+    padding: 7px 11px; border-radius: 10px;
+    border: 1px solid var(--accent-glow);
+    box-shadow: 0 6px 14px rgba(64, 90, 180, 0.08);
+  }
+  .strip__node-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-ink); }
+  .strip__conn {
+    position: relative;
+    flex: 1 1 14px;
+    height: 2px;
+    background: #d6def0;
+    margin: 0 3px;
+    border-radius: 2px;
+    overflow: hidden;
+    min-width: 14px;
+  }
+  .strip__spark {
+    position: absolute;
+    top: 50%; margin-top: -4px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-ink);
+    box-shadow: 0 0 8px var(--accent-glow);
+    animation: spark-sweep 2.8s linear infinite;
+  }
+
+  /* Sequential entrance for the home hero. */
+  .strip--animated .strip__node {
+    animation: node-pop 0.5s var(--ease) both;
+    animation-delay: calc(0.95s + var(--i) * 0.13s);
+  }
+  .strip--animated .strip__conn {
+    animation: node-pop 0.4s var(--ease) both;
+    animation-delay: calc(1.05s + var(--i) * 0.13s);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .strip__spark { animation: none !important; opacity: 0; }
+    .strip--animated .strip__node,
+    .strip--animated .strip__conn,
+    .strip--animated .strip__live { animation: none !important; }
+  }
+</style>

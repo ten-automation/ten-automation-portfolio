@@ -1,0 +1,118 @@
+---
+/** A chat-conversation sample card (Messenger or WhatsApp style). */
+import type { ChatSample } from "../lib/types";
+import Icon from "./Icon.astro";
+import { icons } from "../lib/icons";
+
+interface Props {
+  data: ChatSample;
+  /** Stagger index for reveal. */
+  index?: number;
+}
+const { data, index = 0 } = Astro.props;
+const isWhatsapp = data.headerStyle === "whatsapp";
+const noteAccent = data.noteAccent ?? data.accent;
+---
+<div class:list={["chat", `accent-${data.accent}`, "reveal"]} style={`--reveal-delay:${(index * 0.08).toFixed(2)}s`}>
+  <div class:list={["chat__head", { "chat__head--wa": isWhatsapp }]}>
+    <span class="chat__avatar">
+      <Icon paths={isWhatsapp ? icons.whatsapp : icons.messageCircle} size={isWhatsapp ? 18 : 17} />
+    </span>
+    <div class="chat__id">
+      <span class="chat__channel">{data.channel ?? "Conversation"}</span>
+      {data.channelSub && <span class="chat__sub">{data.channelSub}</span>}
+    </div>
+    {data.tag && <span class="chat__tag">{data.tag}</span>}
+  </div>
+
+  <div class:list={["chat__body", { "chat__body--wa": isWhatsapp }]}>
+    {data.bubbles.map((b) => (
+      <div class:list={["chat__bubble", b.from === "customer" ? "chat__bubble--out" : "chat__bubble--in", { "chat__bubble--wa": isWhatsapp && b.from === "customer" }]}>
+        {b.text}
+      </div>
+    ))}
+
+    {data.attachment && (
+      <div class="chat__file">
+        <span class="chat__file-icon">PDF</span>
+        <div class="chat__file-meta">
+          <span class="chat__file-name">{data.attachment.name}</span>
+          <span class="chat__file-size">{data.attachment.size}</span>
+        </div>
+      </div>
+    )}
+
+    {data.note && (
+      <div class:list={["chat__note", `accent-${noteAccent}`]}>{data.note}</div>
+    )}
+  </div>
+</div>
+
+<style>
+  .chat {
+    display: flex; flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--accent-glow);
+    border-radius: 22px; overflow: hidden;
+    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1);
+  }
+  .chat__head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--hairline); }
+  .chat__head--wa { background: linear-gradient(120deg, #0f7a55, #1fa37c); border-bottom: 0; }
+  .chat__avatar {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  }
+  .chat__head--wa .chat__avatar { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); color: #fff; }
+  .chat__id { display: flex; flex-direction: column; line-height: 1.2; flex: 1; }
+  .chat__channel { font-family: var(--font-head); font-weight: 700; font-size: 13.5px; color: var(--ink); }
+  .chat__sub { font-size: 11px; color: #7c86b8; font-weight: 600; }
+  .chat__head--wa .chat__channel { color: #fff; }
+  .chat__head--wa .chat__sub { color: rgba(255, 255, 255, 0.8); }
+  .chat__tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--accent-ink); background: var(--accent-bg);
+    border-radius: var(--radius-pill); padding: 6px 11px;
+  }
+
+  .chat__body { display: flex; flex-direction: column; gap: 9px; padding: 18px; background: #f9faff; flex: 1; }
+  .chat__body--wa { background: #f4f6f3; gap: 12px; min-height: 200px; }
+  .chat__bubble { font-size: 13.5px; line-height: 1.45; padding: 10px 13px; max-width: 84%; }
+  .chat__bubble--out {
+    align-self: flex-end;
+    background: var(--grad-primary); color: #fff;
+    border-radius: 14px 14px 4px 14px;
+    box-shadow: 0 6px 16px rgba(88, 113, 230, 0.22);
+  }
+  .chat__bubble--in { align-self: flex-start; background: #eef1fb; color: #2b3566; border-radius: 14px 14px 14px 4px; }
+  .chat__bubble--wa {
+    background: #d8f6c8; color: #1c2e22;
+    border-radius: 16px 16px 4px 16px;
+    box-shadow: 0 4px 12px rgba(31, 163, 124, 0.12);
+  }
+
+  .chat__file {
+    align-self: flex-end; max-width: 84%;
+    display: flex; align-items: center; gap: 11px;
+    background: #fff; border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 11px 13px;
+    box-shadow: 0 4px 12px rgba(64, 90, 180, 0.08);
+  }
+  .chat__file-icon {
+    width: 32px; height: 38px; border-radius: 5px;
+    background: linear-gradient(160deg, #fff, #ffe3e0); border: 1px solid #f4c3bd;
+    display: flex; align-items: flex-end; justify-content: center; padding-bottom: 3px;
+    flex: 0 0 auto; font-size: 8px; font-weight: 800; color: #d9534f; letter-spacing: 0.04em;
+  }
+  .chat__file-name { font-size: 12.5px; font-weight: 600; color: #2b3566; }
+  .chat__file-size { font-size: 10.5px; color: var(--muted); }
+  .chat__file-meta { display: flex; flex-direction: column; min-width: 0; }
+
+  .chat__note {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11.5px; font-weight: 600;
+    color: var(--accent-ink); background: var(--accent-bg);
+    border-radius: var(--radius-pill); padding: 7px 12px;
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+/** Dark feature panel listing how a system connects to the wider platform. */
+import type { ConnectedPlatform } from "../lib/types";
+interface Props {
+  data: ConnectedPlatform;
+}
+const { data } = Astro.props;
+---
+<section class="section">
+  <div class="container">
+    <div class="cp reveal-scale">
+      <div class="dot-grid cp__dots"></div>
+      <div class="cp__inner">
+        <div class="cp__text">
+          <span class="cp__eyebrow">{data.eyebrow}</span>
+          <h2 class="cp__title">{data.title}</h2>
+          <p class="cp__body">{data.body}</p>
+        </div>
+        <div class="cp__grid">
+          {data.items.map((item) => (
+            <div class="cp__item">
+              <span class="cp__dot" style={`background:${item.dot};box-shadow:0 0 8px ${item.dot}`}></span>
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cp {
+    position: relative;
+    background: var(--grad-panel);
+    border-radius: 30px;
+    padding: clamp(30px, 4vw, 64px);
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(27, 35, 80, 0.32);
+  }
+  .cp__dots { background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.1px, transparent 1.1px); background-size: 24px 24px; opacity: 0.55; }
+  .cp__inner { position: relative; z-index: 2; display: flex; gap: clamp(28px, 4vw, 60px); flex-wrap: wrap; align-items: center; }
+  .cp__text { flex: 1 1 360px; min-width: 290px; }
+  .cp__eyebrow { display: block; font-size: 13px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #8fe2c6; margin-bottom: 14px; }
+  .cp__title { font-size: clamp(26px, 3.4vw, 42px); line-height: 1.1; color: #fff; margin-bottom: 16px; }
+  .cp__body { font-size: clamp(15px, 1.4vw, 18px); line-height: 1.6; color: #bcc6ec; max-width: 54ch; }
+  .cp__grid { flex: 1 1 320px; min-width: 280px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .cp__item {
+    display: flex; align-items: center; gap: 11px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px; padding: 14px 15px;
+    font-weight: 600; font-size: 14px; color: #eaeefb; line-height: 1.25;
+  }
+  .cp__dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+</style>

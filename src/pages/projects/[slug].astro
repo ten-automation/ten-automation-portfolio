@@ -1,0 +1,406 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Button from "../../components/Button.astro";
+import Icon from "../../components/Icon.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import WorkflowPipeline from "../../components/WorkflowPipeline.astro";
+import ProblemSolution from "../../components/ProblemSolution.astro";
+import HumanReviewSplit from "../../components/HumanReviewSplit.astro";
+import ConnectedPlatform from "../../components/ConnectedPlatform.astro";
+import DemoMedia from "../../components/DemoMedia.astro";
+import IconCardGrid from "../../components/IconCardGrid.astro";
+import ChatCard from "../../components/ChatCard.astro";
+import Caution from "../../components/Caution.astro";
+import CtaPanel from "../../components/CtaPanel.astro";
+import { projects, projectBySlug } from "../../data/projects";
+
+export function getStaticPaths() {
+  return projects.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const project = projectBySlug(slug!)!;
+const statusIcon = project.completed ? "check" : project.featured ? "sparkle" : "none";
+const checkPath = "M20 6 9 17l-5-5";
+---
+<BaseLayout
+  title={project.title}
+  description={project.subtitle}
+  active="systems"
+>
+  <!-- HERO -->
+  <section class:list={["phero", `accent-${project.accent}`]}>
+    <div class="dot-grid"></div>
+    <div class="glow-blob phero__glow-a"></div>
+    <div class="glow-blob phero__glow-b"></div>
+    <div class="container phero__inner">
+      <nav class="phero__crumb reveal" aria-label="Breadcrumb">
+        <a href="/automation-systems">Automation Systems</a>
+        <span aria-hidden="true">/</span>
+        <span>{project.title}</span>
+      </nav>
+
+      <div class="phero__badges reveal" style="--reveal-delay:0.05s">
+        <span class="phero__icon"><Icon paths={project.icon} size={26} /></span>
+        <span class="phero__status">
+          {statusIcon === "check" && <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d={checkPath} /></svg>}
+          {statusIcon === "sparkle" && <Icon paths={[ "M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z" ]} size={13} />}
+          {project.statusLabel}
+        </span>
+      </div>
+
+      <h1 class="display phero__title reveal" style="--reveal-delay:0.1s">{project.title}</h1>
+      <p class="phero__subtitle reveal" style="--reveal-delay:0.16s">{project.subtitle}</p>
+      {project.description && <p class="phero__desc reveal" style="--reveal-delay:0.2s">{project.description}</p>}
+
+      <div class="phero__buttons reveal" style="--reveal-delay:0.24s">
+        <Button href="#demo" variant="primary" icon="play">Watch Demo</Button>
+        <Button href="/contact" variant="secondary">Request Similar Automation</Button>
+      </div>
+
+      <div class="tag-row phero__tags reveal" style="--reveal-delay:0.3s">
+        {project.tags.map((tag) => <span class:list={["tag", `accent-${tag.accent}`]}>{tag.label}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <ProblemSolution problem={project.problem} solution={project.solution} />
+
+  <!-- WORKFLOW ARCHITECTURE -->
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Workflow architecture" title={project.workflowTitle} intro={project.workflowIntro} />
+      <WorkflowPipeline steps={project.workflow} />
+    </div>
+  </section>
+
+  <!-- SAMPLE CONVERSATIONS (+ behaviors) -->
+  {project.sampleConversations && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHead eyebrow={project.sampleConversations.eyebrow} title={project.sampleConversations.title} intro={project.sampleConversations.intro} />
+        <div class="chat-grid">
+          {project.sampleConversations.cards.map((card, i) => <ChatCard data={card} index={i} />)}
+        </div>
+        {project.behaviors && (
+          <div class="behaviors reveal">
+            <span class="behaviors__label">How the assistant behaves</span>
+            <div class="behaviors__row">
+              {project.behaviors.map((b) => (
+                <span class="behaviors__chip"><span class="behaviors__dot"></span>{b}</span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- OUTPUT TYPES (Peacock) -->
+  {project.outputTypes && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHead eyebrow={project.outputTypes.eyebrow} title={project.outputTypes.title} intro={project.outputTypes.intro} wide />
+        <IconCardGrid items={project.outputTypes.items} />
+        <Caution text={project.outputTypes.caution.text} />
+      </div>
+    </section>
+  )}
+
+  <!-- SAMPLE REQUEST (Peacock) -->
+  {project.sampleRequest && (
+    <section class="section">
+      <div class="container">
+        <SectionHead eyebrow={project.sampleRequest.eyebrow} title={project.sampleRequest.title} intro={project.sampleRequest.intro} />
+        <div class="req">
+          <ChatCard data={project.sampleRequest.chat} />
+          <div class="req__status reveal" style="--reveal-delay:0.08s">
+            <div class="req__status-head"><span class="req__status-dot"></span>System status</div>
+            <div class="req__status-list">
+              {project.sampleRequest.statuses.map((st) => (
+                <div class:list={["req__row", `req__row--${st.state}`]}>
+                  <span class="req__row-icon">
+                    {st.state === "done" && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d={checkPath} /></svg>}
+                    {st.state === "active" && <span class="req__spinner"></span>}
+                    {st.state === "pending" && <span class="req__pending"></span>}
+                  </span>
+                  <span class="req__row-label">{st.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- RESULT PREVIEW (Peacock) -->
+  {project.resultPreview && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHead eyebrow={project.resultPreview.eyebrow} title={project.resultPreview.title} intro={project.resultPreview.intro} />
+        <div class="rp reveal">
+          <div class="rp__col rp__raw">
+            <span class="rp__label">Raw upload</span>
+            <div class="rp__doc rp__doc--raw">
+              <div class="rp__doc-head"><span class="rp__pdf">PDF</span><span class="rp__bar" style="width:48%"></span></div>
+              {[96, 88, 99, 72, 91, 64].map((w) => <span class="rp__bar" style={`width:${w}%`}></span>)}
+            </div>
+            <span class="rp__cap rp__cap--muted">Unformatted content</span>
+          </div>
+
+          <span class="rp__arrow" aria-hidden="true"></span>
+
+          <div class="rp__col rp__pipeline">
+            <span class="rp__label rp__label--dark">Processing pipeline</span>
+            <div class="rp__steps">
+              {project.resultPreview.pipeline.map((p) => (
+                <div class="rp__step"><span class="rp__step-dot" style={`background:${p.dot};box-shadow:0 0 8px ${p.dot}`}></span>{p.label}</div>
+              ))}
+            </div>
+          </div>
+
+          <span class="rp__arrow" aria-hidden="true"></span>
+
+          <div class="rp__col rp__out">
+            <span class="rp__label rp__label--mint">Polished output</span>
+            <div class="rp__doc rp__doc--out">
+              <div class="rp__doc-cover"></div>
+              <div class="rp__doc-body">
+                <span class="rp__bar" style="width:90%"></span>
+                <div class="rp__cols">
+                  <div><span class="rp__bar" style="width:100%"></span><span class="rp__bar" style="width:92%"></span><span class="rp__bar" style="width:96%"></span></div>
+                  <div><span class="rp__block"></span><span class="rp__bar" style="width:80%"></span></div>
+                </div>
+              </div>
+            </div>
+            <span class="rp__cap rp__cap--mint">Magazine-style document</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- PREPARE (Onboarding) -->
+  {project.prepare && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHead eyebrow={project.prepare.eyebrow} title={project.prepare.title} intro={project.prepare.intro} wide />
+        <div class="check-grid">
+          {project.prepare.items.map((item, i) => (
+            <div class:list={["check-card", `accent-${item.accent}`, "reveal"]} style={`--reveal-delay:${(i * 0.03).toFixed(2)}s`}>
+              <span class="check-card__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d={checkPath} /></svg></span>
+              <span class="check-card__label">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- RECOVERY (Onboarding) -->
+  {project.recovery && (
+    <section class="section">
+      <div class="container recovery">
+        <div class="recovery__text reveal">
+          <span class="eyebrow eyebrow--accent accent-sky">{project.recovery.eyebrow}</span>
+          <h2 class="display">{project.recovery.title}</h2>
+          <p class="lead" style="margin-top:14px">{project.recovery.body}</p>
+        </div>
+        <div class="recovery__list">
+          {project.recovery.items.map((item, i) => (
+            <div class="recovery__item accent-sky reveal" style={`--reveal-delay:${(i * 0.05).toFixed(2)}s`}>
+              <span class="recovery__icon"><Icon paths={[ "M21 2v6h-6", "M3 12a9 9 0 0 1 15-6.7L21 8", "M3 22v-6h6", "M21 12a9 9 0 0 1-15 6.7L3 16" ]} size={15} strokeWidth={2.2} /></span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- INDUSTRIES (Chameleon) -->
+  {project.industries && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHead eyebrow={project.industries.eyebrow} title={project.industries.title} intro={project.industries.intro} wide />
+        <IconCardGrid items={project.industries.items} min={230} />
+      </div>
+    </section>
+  )}
+
+  <!-- CONFIGURABLES (Chameleon) -->
+  {project.configurables && (
+    <section class="section">
+      <div class="container">
+        <SectionHead eyebrow={project.configurables.eyebrow} title={project.configurables.title} intro={project.configurables.intro} wide />
+        <div class="chips reveal">
+          {project.configurables.items.map((item) => (
+            <span class:list={["chips__chip", `accent-${item.accent}`]}><span class="chips__dot"></span>{item.label}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- EXPECTED OUTCOME (Chatbot) -->
+  {project.outcomes && (
+    <section class="section">
+      <div class="container">
+        <div class="outcome reveal">
+          <span class="eyebrow">Expected outcome</span>
+          <h2 class="display">{project.outcomes.title}</h2>
+          <ul class="outcome__list">
+            {project.outcomes.items.map((item) => (
+              <li class="outcome__item">
+                <span class="outcome__check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7" /></svg></span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <HumanReviewSplit data={project.humanReview} />
+
+  {project.connectedPlatform && <ConnectedPlatform data={project.connectedPlatform} />}
+
+  <DemoMedia data={project.demo} />
+
+  <!-- TOOLS -->
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Tools used" title="The stack behind the system." />
+      <div class="tools reveal">
+        {project.tools.map((tool) => (
+          <span class:list={["chip", `accent-${tool.accent}`]}><span class="chip__dot"></span>{tool.label}</span>
+        ))}
+      </div>
+      {project.toolsNote && <p class="tools__note reveal">{project.toolsNote}</p>}
+    </div>
+  </section>
+
+  <CtaPanel title={project.cta.title} body={project.cta.body} buttonLabel="Request an Automation Consultation" buttonHref="/contact" />
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .phero { position: relative; overflow: hidden; padding: clamp(40px, 5.5vw, 72px) 0 clamp(36px, 4.5vw, 56px); }
+  .phero__glow-a { top: -180px; right: -120px; background: radial-gradient(circle, rgba(143, 226, 198, 0.32), transparent 62%); }
+  .phero__glow-b { bottom: -260px; left: -160px; background: radial-gradient(circle, rgba(157, 180, 245, 0.3), transparent 62%); }
+  .phero__inner { position: relative; z-index: 2; max-width: 840px; }
+  .phero__crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #7c86b8; margin-bottom: clamp(22px, 2.6vw, 32px); }
+  .phero__crumb a { color: var(--peri-ink); text-decoration: none; font-weight: 700; }
+  .phero__crumb a:hover { text-decoration: underline; }
+  .phero__crumb span[aria-hidden] { color: #c0c7e0; }
+  .phero__badges { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .phero__icon {
+    width: 54px; height: 54px; border-radius: 16px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px var(--accent-glow); flex: 0 0 auto;
+  }
+  .phero__status {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent-ink); background: var(--accent-bg);
+    border-radius: var(--radius-pill); padding: 8px 14px;
+  }
+  .phero__title { font-size: clamp(32px, 5vw, 58px); line-height: 1.05; }
+  .phero__subtitle { margin-top: clamp(16px, 2vw, 24px); font-size: clamp(16px, 1.5vw, 21px); font-weight: 500; line-height: 1.5; color: #2b3566; max-width: 62ch; }
+  .phero__desc { margin-top: 14px; font-size: clamp(15px, 1.35vw, 17px); line-height: 1.62; color: var(--body); max-width: 64ch; }
+  .phero__buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(22px, 2.6vw, 32px); }
+  .phero__tags { margin-top: clamp(24px, 2.8vw, 34px); }
+
+  /* Chat grid + behaviors */
+  .chat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: stretch; }
+  .behaviors { margin-top: 28px; }
+  .behaviors__label { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .behaviors__row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .behaviors__chip {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: #fff; border: 1px solid var(--card-border-strong); border-radius: var(--radius-pill);
+    padding: 10px 16px; font-size: 14px; font-weight: 600; color: #2b3566;
+    box-shadow: 0 8px 20px rgba(64, 90, 180, 0.06);
+  }
+  .behaviors__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint-ink); box-shadow: 0 0 7px var(--mint-glow); }
+
+  /* Sample request */
+  .req { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; align-items: start; }
+  .req__status { background: linear-gradient(160deg, #ffffff, #fbfcff); border: 1px solid var(--card-border); border-radius: 24px; padding: clamp(22px, 2.6vw, 30px); box-shadow: 0 18px 50px rgba(64, 90, 180, 0.1); }
+  .req__status-head { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .req__status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--peri-ink); box-shadow: 0 0 0 4px rgba(157, 180, 245, 0.25); }
+  .req__status-list { display: flex; flex-direction: column; gap: 11px; }
+  .req__row { display: flex; align-items: center; gap: 13px; border-radius: 13px; padding: 13px 15px; font-weight: 600; font-size: 14px; }
+  .req__row--done { background: #f4fbf8; border: 1px solid rgba(143, 226, 198, 0.4); color: var(--benefit-ink); }
+  .req__row--active { background: #f1f6ff; border: 1px solid rgba(157, 180, 245, 0.45); color: #2b3566; }
+  .req__row--pending { background: #f7f8fc; border: 1px solid rgba(170, 185, 246, 0.26); color: var(--muted); }
+  .req__row-icon { width: 26px; height: 26px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; box-shadow: 0 4px 10px rgba(64, 90, 180, 0.08); }
+  .req__row--done .req__row-icon { color: var(--mint-ink); }
+  .req__spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(43, 143, 224, 0.28); border-top-color: var(--sky-ink); animation: spin 0.8s linear infinite; }
+  .req__pending { width: 8px; height: 8px; border-radius: 50%; background: #c0c7e0; }
+
+  /* Result preview */
+  .rp { display: flex; align-items: stretch; gap: 0; }
+  .rp__col { flex: 1 1 0; min-width: 0; border-radius: 22px; padding: clamp(20px, 2.2vw, 28px); display: flex; flex-direction: column; }
+  .rp__raw { background: #fff; border: 1px solid var(--card-border); box-shadow: 0 16px 44px rgba(64, 90, 180, 0.08); }
+  .rp__pipeline { background: linear-gradient(160deg, #1b2350, #2a3570); border: 1px solid rgba(120, 134, 184, 0.3); box-shadow: 0 22px 54px rgba(27, 35, 80, 0.28); }
+  .rp__out { background: linear-gradient(160deg, #f4f6fe, #eef4ff); border: 1px solid var(--benefit-border); box-shadow: 0 16px 44px rgba(64, 90, 180, 0.1); }
+  .rp__label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+  .rp__label--dark { color: #8f9bd6; }
+  .rp__label--mint { color: var(--benefit-ink); }
+  .rp__doc { flex: 1; display: flex; flex-direction: column; gap: 8px; border-radius: 12px; }
+  .rp__doc--raw { background: #f7f8fc; border: 1px dashed #d0d6ea; padding: 16px; filter: grayscale(0.25); }
+  .rp__doc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .rp__pdf { width: 22px; height: 26px; border-radius: 4px; background: #ffe3e0; border: 1px solid #f4c3bd; font-size: 6.5px; font-weight: 800; color: #d9534f; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px; }
+  .rp__bar { display: block; height: 5px; background: #e3e6f1; border-radius: 3px; }
+  .rp__doc--out { background: #fff; border: 1px solid var(--card-border); overflow: hidden; box-shadow: 0 16px 34px rgba(64, 90, 180, 0.16); padding: 0; }
+  .rp__doc-cover { height: 62px; background: var(--grad-brand); }
+  .rp__doc-body { padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+  .rp__doc-body .rp__bar { background: #eef1fb; }
+  .rp__cols { display: flex; gap: 10px; }
+  .rp__cols > div { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .rp__block { display: block; height: 34px; background: linear-gradient(135deg, #ddf6ec, #cfeede); border-radius: 5px; }
+  .rp__steps { display: flex; flex-direction: column; gap: 9px; flex: 1; justify-content: center; }
+  .rp__step { display: flex; align-items: center; gap: 11px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 11px; padding: 11px 14px; font-weight: 600; font-size: 13.5px; color: #eaeefb; }
+  .rp__step-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  .rp__cap { margin-top: 14px; font-size: 13px; font-weight: 600; }
+  .rp__cap--muted { color: #7c86b8; }
+  .rp__cap--mint { color: var(--benefit-ink); }
+  .rp__arrow { flex: 0 0 clamp(26px, 2.4vw, 44px); align-self: center; height: 2px; background: linear-gradient(90deg, rgba(120, 134, 184, 0.25), rgba(120, 134, 184, 0.5)); position: relative; }
+  .rp__arrow::after { content: ""; position: absolute; right: -1px; top: 50%; transform: translateY(-50%); border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid rgba(120, 134, 184, 0.6); }
+  @media (max-width: 760px) {
+    .rp { flex-direction: column; gap: 16px; }
+    .rp__arrow { display: none; }
+  }
+
+  /* Check grid (prepare) */
+  .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .check-card { display: flex; align-items: center; gap: 13px; background: #fff; border: 1px solid var(--card-border-strong); border-radius: 15px; padding: 15px 17px; box-shadow: 0 10px 26px rgba(64, 90, 180, 0.07); transition: transform 0.3s var(--ease), box-shadow 0.3s, border-color 0.3s; }
+  .check-card.is-visible:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(64, 90, 180, 0.14); border-color: var(--card-border-hover); }
+  .check-card__icon { width: 34px; height: 34px; border-radius: 10px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; box-shadow: 0 6px 14px var(--accent-glow); }
+  .check-card__label { font-weight: 600; font-size: 14px; line-height: 1.35; color: #2b3566; }
+
+  /* Recovery */
+  .recovery { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(24px, 3vw, 44px); align-items: center; }
+  .recovery__list { display: flex; flex-direction: column; gap: 11px; }
+  .recovery__item { display: flex; align-items: center; gap: 13px; background: #fff; border: 1px solid var(--card-border-strong); border-radius: 15px; padding: 15px 18px; box-shadow: 0 12px 30px rgba(64, 90, 180, 0.08); font-weight: 600; font-size: 14.5px; line-height: 1.4; color: #2b3566; }
+  .recovery__icon { width: 30px; height: 30px; border-radius: 9px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; box-shadow: 0 6px 14px var(--accent-glow); }
+
+  /* Chips (configurables) */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips__chip { display: inline-flex; align-items: center; gap: 9px; background: var(--accent-bg); color: var(--accent-ink); border-radius: var(--radius-pill); padding: 10px 16px; font-size: 14px; font-weight: 600; }
+  .chips__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-ink); }
+
+  /* Outcomes */
+  .outcome { background: linear-gradient(150deg, #ffffff 58%, #f1f6ff); border: 1px solid var(--card-border-strong); border-radius: 24px; padding: clamp(26px, 3vw, 44px); box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1); max-width: 760px; }
+  .outcome__list { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .outcome__item { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.5; color: #3b4471; }
+  .outcome__check { width: 26px; height: 26px; border-radius: 8px; background: var(--mint-bg); color: var(--mint-ink); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; margin-top: 1px; }
+
+  /* Tools */
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tools__note { margin-top: 16px; font-size: 13px; line-height: 1.55; color: #7c86b8; max-width: 60ch; }
+</style>

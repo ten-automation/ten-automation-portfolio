@@ -1,0 +1,109 @@
+---
+/** Project card for the Automation Systems listing and home grid. */
+import type { Project } from "../lib/types";
+import Icon from "./Icon.astro";
+
+interface Props {
+  project: Project;
+  index?: number;
+}
+const { project, index = 0 } = Astro.props;
+const href = `/projects/${project.slug}`;
+---
+<article
+  class:list={["pcard", `accent-${project.accent}`, "reveal"]}
+  data-cats={project.cats.join(" ")}
+  style={`--reveal-delay:${(index * 0.05).toFixed(2)}s`}
+>
+  <div class="pcard__top">
+    <span class="pcard__icon"><Icon paths={project.icon} size={23} /></span>
+    <div class="pcard__badges">
+      {project.completed && (
+        <span class="status-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>Completed</span>
+      )}
+      {project.featured && <span class="pcard__featured">Featured</span>}
+    </div>
+  </div>
+
+  <div class="pcard__type">{project.category}</div>
+  <h3 class="pcard__title">{project.title}</h3>
+  <p class="pcard__desc">{project.cardDescription}</p>
+
+  <div class="pcard__flow">
+    {project.cardFlow.map((node, i) => (
+      <>
+        <span class:list={["pcard__node", `accent-${node.accent}`]}><span class="pcard__node-dot"></span>{node.label}</span>
+        {i < project.cardFlow.length - 1 && (
+          <span class:list={["pcard__conn", `accent-${project.cardFlow[i + 1].accent}`]}><span class="pcard__spark" style={`animation-delay:${(i * 0.5).toFixed(2)}s`}></span></span>
+        )}
+      </>
+    ))}
+  </div>
+
+  <div class="tag-row">
+    {project.tags.slice(0, 4).map((tag) => (
+      <span class:list={["tag", `accent-${tag.accent}`]}>{tag.label}</span>
+    ))}
+  </div>
+
+  <a href={href} class="pcard__cta">View {project.title}<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+</article>
+
+<style>
+  .pcard {
+    display: flex; flex-direction: column; gap: 15px;
+    background: #fff;
+    border: 1px solid var(--card-border-strong);
+    border-radius: 24px;
+    padding: clamp(22px, 2.4vw, 30px);
+    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1);
+    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+    height: 100%;
+  }
+  .pcard:hover { transform: translateY(-6px); box-shadow: 0 30px 64px rgba(64, 90, 180, 0.18), 0 0 0 4px var(--accent-glow); border-color: var(--card-border-hover); }
+  /* keep hover lift even though .reveal sets a transform when hidden */
+  .pcard.is-visible:hover { transform: translateY(-6px); }
+
+  .pcard__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .pcard__icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 18px var(--accent-glow); flex: 0 0 auto;
+  }
+  .pcard__badges { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .pcard__featured {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #3f6ad1; background: linear-gradient(120deg, #e9edfd, #ddf6ec);
+    border-radius: var(--radius-pill); padding: 6px 12px;
+  }
+  .pcard__type { font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+  .pcard__title { font-size: 21px; line-height: 1.14; letter-spacing: -0.01em; }
+  .pcard__desc { font-size: 14.5px; line-height: 1.56; color: var(--body); }
+
+  .pcard__flow {
+    display: flex; align-items: center;
+    background: #f7f9ff; border: 1px solid rgba(170, 185, 246, 0.32);
+    border-radius: 13px; padding: 11px 13px;
+  }
+  .pcard__node {
+    flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    font-size: 11.5px; font-weight: 600; padding: 6px 10px; border-radius: 9px; white-space: nowrap;
+  }
+  .pcard__node-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-ink); }
+  .pcard__conn { position: relative; flex: 1; height: 2px; background: #e3e7f3; margin: 0 4px; border-radius: 2px; overflow: hidden; min-width: 12px; }
+  .pcard__spark { position: absolute; top: 50%; margin-top: -3px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-ink); box-shadow: 0 0 7px var(--accent-glow); animation: spark-sweep 2.6s linear infinite; }
+
+  .pcard__cta {
+    margin-top: auto; align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 9px;
+    background: #fff; color: #2b3566;
+    font-weight: 600; font-size: 14.5px;
+    padding: 12px 22px; border-radius: var(--radius-pill);
+    text-decoration: none; border: 1.5px solid #d7ddf6;
+    transition: transform 0.3s var(--ease), border-color 0.3s;
+  }
+  .pcard__cta:hover { transform: translateY(-3px); border-color: #9db4f5; }
+</style>

@@ -1,0 +1,58 @@
+---
+/**
+ * Base page shell: head, skip link, nav, main, footer, and the global
+ * scroll-reveal observer. Every page renders inside this.
+ */
+import "../styles/global.css";
+import BaseHead from "../components/BaseHead.astro";
+import SiteNav from "../components/SiteNav.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  active?: string;
+  noindex?: boolean;
+}
+const { title, description, ogImage, active, noindex } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} ogImage={ogImage} noindex={noindex} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <SiteNav active={active} />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+
+    <script>
+      // Progressive-enhancement scroll reveal. Elements with .reveal /
+      // .reveal-scale start hidden (via CSS) and get .is-visible when seen.
+      // Reduced-motion users get everything shown immediately.
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const items = document.querySelectorAll<HTMLElement>(".reveal, .reveal-scale, .reveal-cap");
+
+      if (prefersReduced || !("IntersectionObserver" in window)) {
+        items.forEach((el) => el.classList.add("is-visible"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                obs.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.12 },
+        );
+        items.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

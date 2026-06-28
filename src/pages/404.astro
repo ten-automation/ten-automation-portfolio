@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
+---
+<BaseLayout title="Page not found" description="The page you're looking for doesn't exist." noindex>
+  <section class="nf">
+    <div class="dot-grid"></div>
+    <div class="container nf__inner">
+      <span class="nf__code">404</span>
+      <h1 class="display nf__title">This page took the day off.</h1>
+      <p class="lead nf__body">The page you're looking for doesn't exist or may have moved. Let's get you back to a working system.</p>
+      <div class="nf__actions">
+        <Button href="/" variant="primary">Back to home</Button>
+        <Button href="/automation-systems" variant="secondary">View Automation Systems</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf { position: relative; overflow: hidden; padding: clamp(80px, 12vw, 160px) 0; text-align: center; }
+  .nf__inner { position: relative; z-index: 2; max-width: 640px; }
+  .nf__code { font-family: var(--font-head); font-weight: 800; font-size: clamp(64px, 12vw, 140px); line-height: 1; background: var(--grad-ink); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nf__title { margin: 12px 0 16px; font-size: clamp(28px, 4vw, 44px); }
+  .nf__body { margin: 0 auto 28px; max-width: 48ch; }
+  .nf__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+</style>

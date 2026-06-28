@@ -1,0 +1,138 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Icon from "../components/Icon.astro";
+import CtaPanel from "../components/CtaPanel.astro";
+import { about } from "../data/about";
+import { services } from "../data/services";
+import { site } from "../data/site";
+
+const initials = site.owner.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("");
+---
+<BaseLayout
+  title="About"
+  description={`About ${site.owner}, ${site.role}. The principles and focus areas behind practical automation systems built with n8n, Apps Script, and AI.`}
+  active="about"
+>
+  <!-- HERO -->
+  <section class="ahero">
+    <div class="dot-grid"></div>
+    <div class="glow-blob ahero__glow"></div>
+    <div class="container ahero__inner">
+      <div class="ahero__text reveal">
+        <span class="eyebrow">{about.eyebrow}</span>
+        <h1 class="display ahero__title">{about.title}</h1>
+        {about.intro.map((p) => <p class="ahero__para">{p}</p>)}
+      </div>
+
+      <aside class="ahero__panel reveal-scale" aria-label={about.focus.label}>
+        <div class="ahero__id">
+          <span class="ahero__mono">{initials}</span>
+          <div class="ahero__id-meta">
+            <span class="ahero__id-name">{site.owner}</span>
+            <span class="ahero__id-role">{site.role}</span>
+          </div>
+        </div>
+        <span class="ahero__panel-label">{about.focus.label}</span>
+        <div class="ahero__chips">
+          {about.focus.items.map((item) => (
+            <span class:list={["ahero__chip", `accent-${item.accent}`]}><span class="ahero__chip-dot"></span>{item.label}</span>
+          ))}
+        </div>
+        <div class="ahero__status"><span class="ahero__status-dot"></span>{site.availability}</div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- PRINCIPLES -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">{about.principles.eyebrow}</span>
+        <h2 class="display">{about.principles.title}</h2>
+      </div>
+      <div class="principles">
+        {about.principles.items.map((item, i) => (
+          <div class:list={["principle", `accent-${item.accent}`, "reveal"]} style={`--reveal-delay:${(i * 0.06).toFixed(2)}s`}>
+            <span class="principle__icon"><Icon paths={item.icon} size={24} /></span>
+            <h3 class="principle__title">{item.title}</h3>
+            <p class="principle__body">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--wide reveal">
+        <span class="eyebrow">{about.servicesSection.eyebrow}</span>
+        <h2 class="display">{about.servicesSection.title}</h2>
+        <p class="lead" style="margin-top:12px">{about.servicesSection.intro}</p>
+      </div>
+      <div class="services">
+        {services.map((service, i) => (
+          <div class:list={["service", `accent-${service.accent}`, "reveal"]} style={`--reveal-delay:${(i * 0.05).toFixed(2)}s`}>
+            <span class="service__icon"><Icon paths={service.icon} size={23} /></span>
+            <h3 class="service__title">{service.title}</h3>
+            <p class="service__body">{service.body}</p>
+            <ul class="service__points">
+              {service.points.map((point) => (
+                <li><span class="service__check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></span>{point}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaPanel
+    eyebrow={about.cta.eyebrow}
+    title={about.cta.title}
+    body={about.cta.body}
+    buttonLabel={about.cta.button.label}
+    buttonHref={about.cta.button.href}
+  />
+</BaseLayout>
+
+<style>
+  .ahero { position: relative; overflow: hidden; padding: clamp(44px, 6vw, 80px) 0 clamp(40px, 5vw, 64px); }
+  .ahero__glow { top: -160px; right: -120px; background: radial-gradient(circle, rgba(157, 180, 245, 0.32), transparent 62%); }
+  .ahero__inner { position: relative; z-index: 2; display: grid; grid-template-columns: 1.5fr 1fr; gap: clamp(28px, 4vw, 56px); align-items: start; }
+  .ahero__title { font-size: clamp(30px, 4.6vw, 54px); line-height: 1.06; margin-bottom: 22px; }
+  .ahero__para { font-size: clamp(15px, 1.4vw, 18px); line-height: 1.62; color: var(--body); margin-bottom: 16px; max-width: 60ch; }
+
+  .ahero__panel { background: linear-gradient(150deg, #ffffff 60%, #f3f6ff); border: 1px solid rgba(170, 185, 246, 0.4); border-radius: 22px; padding: clamp(22px, 2.6vw, 30px); box-shadow: 0 24px 56px rgba(64, 90, 180, 0.14); }
+  .ahero__id { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .ahero__mono { width: 54px; height: 54px; border-radius: 16px; background: var(--grad-brand); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 22px rgba(88, 113, 230, 0.3); flex: 0 0 auto; }
+  .ahero__id-meta { display: flex; flex-direction: column; line-height: 1.25; }
+  .ahero__id-name { font-family: var(--font-head); font-weight: 700; font-size: 17px; color: var(--ink); }
+  .ahero__id-role { font-size: 13px; font-weight: 600; color: var(--peri-ink); }
+  .ahero__panel-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .ahero__chips { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 22px; }
+  .ahero__chip { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-bg); color: var(--accent-ink); border-radius: var(--radius-pill); padding: 8px 13px; font-size: 13px; font-weight: 600; }
+  .ahero__chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-ink); }
+  .ahero__status { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--mint-ink); }
+  .ahero__status-dot { width: 8px; height: 8px; border-radius: 50%; background: #2fae84; box-shadow: 0 0 0 4px rgba(47, 174, 132, 0.18); }
+
+  @media (max-width: 820px) {
+    .ahero__inner { grid-template-columns: 1fr; }
+  }
+
+  .principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+  .principle { background: #fff; border: 1px solid var(--card-border-strong); border-radius: 22px; padding: clamp(24px, 2.6vw, 32px); box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1); }
+  .principle__icon { width: 50px; height: 50px; border-radius: 14px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px var(--accent-glow); margin-bottom: 18px; }
+  .principle__title { font-size: 19px; margin-bottom: 10px; }
+  .principle__body { font-size: 14.5px; line-height: 1.6; color: var(--body); }
+
+  .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+  .service { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--card-border-strong); border-radius: 22px; padding: clamp(24px, 2.6vw, 32px); box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1); transition: transform 0.35s var(--ease), box-shadow 0.35s, border-color 0.35s; }
+  .service.is-visible:hover { transform: translateY(-5px); box-shadow: 0 28px 60px rgba(64, 90, 180, 0.16); border-color: var(--card-border-hover); }
+  .service__icon { width: 50px; height: 50px; border-radius: 14px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px var(--accent-glow); margin-bottom: 18px; }
+  .service__title { font-size: 19px; margin-bottom: 10px; }
+  .service__body { font-size: 14.5px; line-height: 1.6; color: var(--body); margin-bottom: 18px; }
+  .service__points { list-style: none; margin: auto 0 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .service__points li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; color: #2b3566; }
+  .service__check { width: 22px; height: 22px; border-radius: 7px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+</style>

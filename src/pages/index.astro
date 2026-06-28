@@ -1,0 +1,377 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
+import PainPoints from "../components/PainPoints.astro";
+import ToolsStack from "../components/ToolsStack.astro";
+import Capabilities from "../components/Capabilities.astro";
+import FeaturedSystems from "../components/FeaturedSystems.astro";
+import Certifications from "../components/Certifications.astro";
+import DiscoveryProcess from "../components/DiscoveryProcess.astro";
+import DiscoveryCall from "../components/DiscoveryCall.astro";
+import ContactBand from "../components/ContactBand.astro";
+import { home } from "../data/home";
+import { site } from "../data/site";
+
+function resolvePortrait(): string {
+  for (const name of ["portrait.jpg", "portrait.jpeg", "portrait.png", "portrait.webp"]) {
+    try {
+      if (fs.existsSync(path.join(process.cwd(), "public", name))) return `/${name}`;
+    } catch {
+      /* ignore */
+    }
+  }
+  return "";
+}
+const portraitSrc = resolvePortrait();
+const initials = site.owner.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("");
+const h = home.hero;
+---
+<BaseLayout title={site.siteName} active="automate">
+  <span id="top" class="anchor-top" aria-hidden="true"></span>
+
+  <!-- 1 + 2 + 3 — HERO → scroll transformation → introduction -->
+  <section class="hero" id="hero">
+    <div class="hero__stage">
+      <div class="glow-blob hero__glow-a"></div>
+      <div class="glow-blob hero__glow-b"></div>
+
+      <div class="hero__lead" id="heroLead">
+        <span class="hero__role">{h.roleLabel}</span>
+        <p class="hero__pain">{h.headline}</p>
+        <h1 class="hero__answer" set:html={h.answerHtml}></h1>
+        <div class="hero__ctas">
+          <Button href={h.primaryCta.href} variant="primary">{h.primaryCta.label}</Button>
+          <Button href={h.secondaryCta.href} variant="secondary" icon="none">{h.secondaryCta.label}</Button>
+        </div>
+      </div>
+
+      <div class="hero__intro" id="heroIntro">
+        <div class="hero__figure" id="heroFigure">
+          <div class="hero__photo">
+            <div class="pframe">
+              <span class="pframe__glow" aria-hidden="true"></span>
+              <div class="pframe__inner">
+                {portraitSrc ? (
+                  <img src={portraitSrc} alt={h.photoAlt} class="pframe__img" width="440" height="550"
+                    onerror="this.style.display='none';this.closest('.pframe__inner').classList.add('is-fallback');" />
+                ) : null}
+                <span class="pframe__mono" aria-hidden={portraitSrc ? "true" : undefined}>{initials}</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero__namecard" id="heroNameCard">
+            <span class="hero__namecard-name">{home.intro.name}</span>
+            <span class="hero__location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-7 8-12a8 8 0 1 0-16 0c0 5 8 12 8 12z" /><circle cx="12" cy="10" r="2.6" /></svg>
+              {home.intro.location}
+            </span>
+          </div>
+        </div>
+
+        <div class="hero__card" id="heroCard">
+          <h3 class="hero__card-heading">About Me</h3>
+          <div class="hero__card-box">
+            <p class="hero__card-copy" set:html={home.intro.copyHtml}></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__hint" id="heroHint">
+        <span>{h.scrollHint}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 — PAIN POINTS -->
+  <PainPoints
+    id={home.painPoints.id}
+    eyebrow={home.painPoints.eyebrow}
+    title={home.painPoints.title}
+    intro={home.painPoints.intro}
+    cards={home.painPoints.cards}
+  />
+
+  <!-- 4 — TOOLS & STACK -->
+  <ToolsStack
+    eyebrow={home.tools.eyebrow}
+    title={home.tools.title}
+    intro={home.tools.intro}
+    items={home.tools.items}
+  />
+
+  <!-- 5 — CAPABILITIES -->
+  <Capabilities
+    eyebrow={home.capabilities.eyebrow}
+    title={home.capabilities.title}
+    intro={home.capabilities.intro}
+    cards={home.capabilities.cards}
+  />
+
+  <!-- 6 — FEATURED AUTOMATION SYSTEMS -->
+  <FeaturedSystems
+    id={home.featured.id}
+    eyebrow={home.featured.eyebrow}
+    title={home.featured.title}
+    intro={home.featured.intro}
+    systems={home.featured.systems}
+    bookingHref={`#${home.discoveryCall.id}`}
+  />
+
+  <!-- 6b — CERTIFICATIONS (live from Google Drive) -->
+  <Certifications />
+
+  <!-- 7 — DISCOVERY PROCESS -->
+  <DiscoveryProcess
+    id={home.discoveryProcess.id}
+    eyebrow={home.discoveryProcess.eyebrow}
+    title={home.discoveryProcess.title}
+    intro={home.discoveryProcess.intro}
+    steps={home.discoveryProcess.steps}
+    trustNote={home.discoveryProcess.trustNote}
+  />
+
+  <!-- 8 — DISCOVERY CALL + CALENDLY + PRE-CALL QUESTIONS -->
+  <DiscoveryCall
+    id={home.discoveryCall.id}
+    eyebrow={home.discoveryCall.eyebrow}
+    title={home.discoveryCall.title}
+    statement={home.discoveryCall.statement}
+    supporting={home.discoveryCall.supporting}
+    cta={home.discoveryCall.cta}
+  />
+
+  <!-- 9 — CONTACT FOOTER BAND -->
+  <ContactBand
+    id={home.contact.id}
+    eyebrow={home.contact.eyebrow}
+    title={home.contact.title}
+    body={home.contact.body}
+  />
+</BaseLayout>
+
+<style>
+  .anchor-top { position: absolute; top: 0; }
+
+  /* ===== Portrait frame (rectangular, no dots / ports / nodes) ===== */
+  .pframe { position: relative; width: clamp(210px, 56vw, 280px); aspect-ratio: 4 / 5; }
+  .pframe__glow {
+    position: absolute; inset: -18px; border-radius: 34px;
+    background: radial-gradient(circle at 50% 38%, var(--peri-glow), var(--lilac-glow) 55%, transparent 76%);
+    filter: blur(20px); opacity: 0.7; animation: glow-pulse 6s ease-in-out infinite;
+  }
+  .pframe__inner {
+    position: absolute; inset: 0; border-radius: 22px; overflow: hidden;
+    background: var(--surface-3);
+    border: 1px solid var(--card-border-strong);
+    box-shadow: 0 30px 70px rgba(64, 90, 180, 0.28), inset 0 0 0 4px var(--surface);
+  }
+  .pframe__img { width: 100%; height: 100%; object-fit: cover; display: block; filter: contrast(1.03) saturate(1.02); }
+  .pframe__mono { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: var(--grad-brand); color: #fff; font-family: var(--font-head); font-weight: 800; font-size: clamp(48px, 6vw, 76px); }
+  .pframe__inner:not(:has(.pframe__img)) .pframe__mono,
+  .pframe__inner.is-fallback .pframe__mono { display: flex; }
+
+  /* ===== Hero lead (the message) ===== */
+  .hero__role {
+    display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--peri-ink);
+    background: var(--peri-bg); border: 1px solid var(--peri-glow);
+    border-radius: var(--radius-pill); padding: 7px 16px; margin-bottom: 22px;
+  }
+  /* Pain statement: large and readable (the lead-in). */
+  .hero__pain {
+    font-family: var(--font-head); font-weight: 700; line-height: 1.12;
+    font-size: clamp(24px, 4.4vw, 42px); letter-spacing: -0.022em;
+    color: var(--ink-hero); margin: 0 auto; max-width: 24ch;
+  }
+  /* Outcome statement: the strongest, most memorable element — larger than the pain. */
+  .hero__answer {
+    margin: clamp(16px, 2.1vw, 26px) auto 0; max-width: 22ch;
+    font-family: var(--font-head); font-weight: 800;
+    font-size: clamp(29px, 5.8vw, 56px); line-height: 1.06; letter-spacing: -0.03em;
+    color: var(--ink-hero);
+  }
+  .hero__answer :global(strong) { font-weight: 800; color: var(--peri-ink); }
+  .hero__answer :global(strong:nth-of-type(2)) { color: var(--lilac-ink); }
+  .hero__answer :global(strong:nth-of-type(3)) { color: var(--mint-ink); }
+  .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: clamp(24px, 2.8vw, 34px); }
+
+  /* ===== Name + location (under the portrait, no box) ===== */
+  .hero__namecard {
+    display: flex; flex-direction: column; align-items: center; gap: 9px;
+    max-width: 100%;
+    background: none; border: none; box-shadow: none; padding: 6px 4px 0;
+  }
+  .hero__namecard-name {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: clamp(20px, 2.4vw, 30px); letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--ink); text-align: center; line-height: 1.1; white-space: nowrap;
+  }
+  .hero__location {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--lav-ink);
+    background: var(--lav-soft); border: 1px solid var(--lav-border-soft);
+    border-radius: var(--radius-pill); padding: 5px 13px 5px 11px;
+  }
+  .hero__location svg { width: 15px; height: 15px; flex: 0 0 auto; }
+
+  /* ===== Introduction (About Me) — heading + plain statement, no box ===== */
+  .hero__card { display: flex; flex-direction: column; gap: clamp(12px, 1.4vw, 18px); text-align: left; }
+  .hero__card-heading {
+    font-family: var(--font-head); font-weight: 800;
+    font-size: clamp(20px, 2.3vw, 30px); letter-spacing: 0.01em; text-transform: uppercase;
+    color: var(--ink-hero); line-height: 1;
+  }
+  .hero__card-box {
+    display: flex; flex-direction: column; justify-content: flex-start;
+    background: none; border: none; border-radius: 0; padding: 0; box-shadow: none;
+  }
+  .hero__card-copy { font-size: clamp(18px, 1.9vw, 25px); line-height: 1.66; color: var(--body); margin: 0; }
+  .hero__card-copy :global(strong) { font-weight: 700; color: var(--lav-ink); }
+
+  /* ===== Hero base layout (stacked — mobile + reduced motion) ===== */
+  .hero { position: relative; }
+  .hero__glow-a { top: -160px; right: -120px; background: radial-gradient(circle, var(--mint-glow), transparent 64%); opacity: 0.6; }
+  .hero__glow-b { bottom: -200px; left: -180px; background: radial-gradient(circle, var(--lilac-glow), transparent 64%); opacity: 0.6; }
+  .hero__stage {
+    position: relative; z-index: 2; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center;
+    gap: clamp(30px, 5vw, 46px);
+    padding: clamp(56px, 9vh, 92px) var(--pad-x) clamp(48px, 7vw, 72px);
+    text-align: center;
+  }
+  .hero__lead { position: relative; z-index: 1; }
+  .hero__intro {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: clamp(20px, 3vw, 26px); width: 100%; max-width: 560px;
+  }
+  .hero__figure { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .hero__card { width: 100%; }
+  .hero__hint { display: none; }
+
+  /* ===== Desktop scroll scene (motion allowed) ===== */
+  @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+    .hero { height: 240vh; }
+    .hero__stage { position: sticky; top: 0; height: 100vh; display: block; padding: 0; text-align: initial; }
+    .hero__lead {
+      position: absolute; left: 50%; top: 0; transform: translateX(-50%) translateY(1.5vh);
+      width: min(1000px, 93vw); text-align: center; z-index: 4; will-change: transform, opacity;
+    }
+    /* Wider max-widths + larger type so each statement reads in ~2 clean lines. */
+    .hero__lead .hero__role { margin-bottom: 12px; }
+    .hero__lead .hero__pain { font-size: clamp(22px, 3vw, 40px); max-width: 38ch; }
+    .hero__lead .hero__answer { margin-top: 12px; font-size: clamp(27px, 4vw, 52px); max-width: 34ch; }
+    .hero__lead .hero__ctas { margin-top: 20px; }
+    .hero__intro {
+      position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%);
+      width: min(1180px, 92vw); max-width: none;
+      display: grid; grid-template-columns: minmax(0, 43fr) minmax(0, 57fr);
+      gap: clamp(20px, 2vw, 30px); align-items: stretch;
+    }
+    /* Figure sits at the inner edge of its column so the portrait stays close to the card.
+       Width fits the one-line name; the portrait fills it. */
+    .hero__figure {
+      gap: 14px; opacity: 1; transform-origin: center center; will-change: transform;
+      justify-content: center; width: clamp(360px, 30vw, 430px); justify-self: end;
+    }
+    .hero__photo { width: 100%; }
+    .hero__photo .pframe { width: 100%; }
+    /* Heading sits at the top; the box fills down to match the portrait + name height. */
+    .hero__card { justify-content: flex-start; }
+    .hero__namecard { opacity: 0; will-change: opacity; }
+    .hero__card { opacity: 0; transform: translateX(40px); will-change: transform, opacity; }
+    .hero__hint {
+      position: absolute; left: 50%; bottom: 4vh; transform: translateX(-50%); z-index: 4;
+      display: inline-flex; flex-direction: column; align-items: center; gap: 6px;
+      font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    }
+    .hero__hint svg { width: 18px; height: 18px; animation: hint-bob 1.8s ease-in-out infinite; }
+  }
+
+  @keyframes hint-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pframe__glow { animation: none !important; }
+  }
+</style>
+
+<script>
+  // Hero scroll scene (desktop, motion allowed): the portrait grows and slides
+  // from the centre into the left column of a tight two-column introduction;
+  // the name card reveals under it and the intro card reveals beside it; the
+  // message eases up and fades. One continuous transformation, rAF-throttled.
+  (() => {
+    const hero = document.getElementById("hero");
+    const stage = hero?.querySelector(".hero__stage") as HTMLElement | null;
+    const lead = document.getElementById("heroLead");
+    const figure = document.getElementById("heroFigure");
+    const nameCard = document.getElementById("heroNameCard");
+    const card = document.getElementById("heroCard");
+    const hint = document.getElementById("heroHint");
+    if (!hero || !stage || !lead || !figure || !card) return;
+
+    const mq = window.matchMedia("(min-width: 901px) and (prefers-reduced-motion: no-preference)");
+    const clamp = (v: number, a: number, b: number) => Math.min(Math.max(v, a), b);
+    const rng = (p: number, a: number, b: number) => clamp((p - a) / (b - a), 0, 1);
+    let startTx = 0;
+    let ticking = false;
+
+    function measure() {
+      if (!mq.matches) return;
+      const prev = figure!.style.transform;
+      figure!.style.transform = "none";
+      const fr = figure!.getBoundingClientRect();
+      const sr = stage!.getBoundingClientRect();
+      startTx = sr.left + sr.width / 2 - (fr.left + fr.width / 2);
+      figure!.style.transform = prev;
+    }
+
+    function reset() {
+      [lead, figure, nameCard, card, hint].forEach((el) => {
+        if (el) { el.style.transform = ""; el.style.opacity = ""; }
+      });
+    }
+
+    function update() {
+      ticking = false;
+      if (!mq.matches) { reset(); return; }
+      const dist = hero!.offsetHeight - window.innerHeight;
+      const p = dist > 0 ? clamp(-hero!.getBoundingClientRect().top / dist, 0, 1) : 0;
+      const vh = window.innerHeight;
+
+      // Message: rises and fades early.
+      const tOut = rng(p, 0.04, 0.28);
+      lead!.style.opacity = String(1 - tOut);
+      lead!.style.transform = `translateX(-50%) translateY(${(0.02 * vh - 0.13 * vh * tOut).toFixed(1)}px)`;
+
+      // Portrait: starts small, pushed below the message and centred; grows and
+      // slides into the left column as you scroll.
+      const pp = rng(p, 0.06, 0.54);
+      const initY = 0.21 * vh;
+      figure!.style.transform =
+        `translateX(${(startTx * (1 - pp)).toFixed(1)}px) translateY(${(initY * (1 - pp)).toFixed(1)}px) scale(${(0.42 + 0.58 * pp).toFixed(3)})`;
+
+      // Name card appears under the portrait.
+      if (nameCard) nameCard.style.opacity = String(rng(p, 0.44, 0.64));
+
+      // Intro card slides in beside the portrait.
+      const cp = rng(p, 0.42, 0.66);
+      card!.style.opacity = String(cp);
+      card!.style.transform = `translateX(${((1 - cp) * 40).toFixed(1)}px)`;
+
+      if (hint) hint.style.opacity = String(clamp(1 - p * 6, 0, 1));
+    }
+
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    function init() { measure(); update(); }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", () => { measure(); onScroll(); }, { passive: true });
+    mq.addEventListener?.("change", init);
+    if (document.fonts && (document.fonts as any).ready) (document.fonts as any).ready.then(init);
+    init();
+  })();
+</script>

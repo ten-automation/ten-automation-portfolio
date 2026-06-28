@@ -1,0 +1,97 @@
+---
+/**
+ * The signature element: a single white panel with a vertical pipeline of
+ * steps. Each row is one accent icon node on a left rail, joined to the next
+ * by ONE vertical gradient connector — single top-to-bottom flow, no crossing
+ * lines. Cards reveal sequentially; each node pulses once as it appears; the
+ * connector draws in softly. Stacks naturally on mobile.
+ */
+import type { WorkflowStep } from "../lib/types";
+import Icon from "./Icon.astro";
+
+interface Props {
+  steps: WorkflowStep[];
+}
+const { steps } = Astro.props;
+---
+<div class="pipeline reveal-scale">
+  <ol class="pipeline__list">
+    {steps.map((step, i) => (
+      <li class:list={["pipeline__row", `accent-${step.accent}`, "reveal"]} style={`--reveal-delay:${(i * 0.08).toFixed(2)}s`}>
+        <div class="pipeline__rail">
+          {i < steps.length - 1 && <span class="pipeline__line" aria-hidden="true"></span>}
+          <span class="pipeline__chip">
+            <Icon paths={step.icon} size={24} />
+          </span>
+        </div>
+        <div class="pipeline__card card--hover">
+          <div class="pipeline__step">Step {String(step.n).padStart(2, "0")}</div>
+          <h3 class="pipeline__title">{step.title}</h3>
+          <p class="pipeline__desc">{step.desc}</p>
+          <div class="benefit-pill">
+            <span class="benefit-pill__icon">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M12 2l1.8 5.6L19.4 9l-5.6 1.8L12 16l-1.8-5.2L4.6 9l5.6-1.4z" /></svg>
+            </span>
+            <span>{step.benefit}</span>
+          </div>
+        </div>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .pipeline {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff, #fbfcff);
+    border: 1px solid rgba(170, 185, 246, 0.25);
+    border-radius: 28px;
+    padding: clamp(24px, 3.6vw, 56px) clamp(18px, 3vw, 48px);
+    box-shadow: 0 22px 60px rgba(64, 90, 180, 0.09);
+  }
+  .pipeline__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; max-width: 760px; }
+  .pipeline__row { position: relative; display: flex; gap: clamp(16px, 2.2vw, 28px); align-items: stretch; }
+  .pipeline__row:not(:last-child) { margin-bottom: clamp(22px, 3vw, 36px); }
+
+  .pipeline__rail { position: relative; flex: 0 0 auto; width: 56px; }
+  .pipeline__line {
+    position: absolute;
+    top: 56px; left: 28px;
+    transform: translateX(-50%) scaleY(0);
+    transform-origin: top;
+    width: 2px;
+    height: calc(100% + clamp(22px, 3vw, 36px) - 56px);
+    background: linear-gradient(180deg, rgba(120, 134, 184, 0.42), rgba(120, 134, 184, 0.14));
+    border-radius: 2px;
+    transition: transform 0.6s var(--ease) 0.15s;
+  }
+  .pipeline__row.is-visible .pipeline__line { transform: translateX(-50%) scaleY(1); }
+
+  .pipeline__chip {
+    position: relative; z-index: 1;
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 26px var(--accent-glow);
+    border: 3px solid #fff;
+  }
+  .pipeline__row.is-visible .pipeline__chip { animation: node-pulse 0.9s ease 0.15s 1; }
+
+  .pipeline__card {
+    flex: 1; min-width: 0;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: clamp(20px, 2.2vw, 28px);
+    box-shadow: var(--shadow-card);
+  }
+  .pipeline__step { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 8px; }
+  .pipeline__title { font-size: clamp(18px, 2vw, 21px); line-height: 1.2; margin-bottom: 9px; }
+  .pipeline__desc { font-size: 14.5px; line-height: 1.6; color: var(--body); max-width: 60ch; margin-bottom: 16px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pipeline__line { transform: translateX(-50%) scaleY(1) !important; }
+    .pipeline__chip { animation: none !important; }
+  }
+</style>

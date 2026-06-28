@@ -1,0 +1,116 @@
+---
+/**
+ * A vertical chain of capability nodes that "activate" one by one on scroll.
+ * Single top-to-bottom rail: each node sits on the rail, joined to the next by
+ * ONE connector that draws in when the row reveals; the node pulses as it
+ * activates. Stacks naturally on mobile (it is already vertical).
+ */
+import type { Accent, IconPaths } from "../lib/types";
+import Icon from "./Icon.astro";
+
+interface NodeItem {
+  title: string;
+  desc: string;
+  accent: Accent;
+  icon: IconPaths;
+}
+interface Props {
+  nodes: NodeItem[];
+}
+const { nodes } = Astro.props;
+---
+<ol class="nf">
+  {nodes.map((node, i) => (
+    <li class:list={["nf__row", `accent-${node.accent}`, "reveal"]} style={`--reveal-delay:${(i * 0.12).toFixed(2)}s`}>
+      <div class="nf__rail">
+        {i < nodes.length - 1 && <span class="nf__line" aria-hidden="true"></span>}
+        <span class="nf__node">
+          <Icon paths={node.icon} size={22} />
+          <span class="nf__pulse" aria-hidden="true"></span>
+        </span>
+      </div>
+      <div class="nf__card">
+        <span class="nf__num">{String(i + 1).padStart(2, "0")}</span>
+        <div class="nf__text">
+          <h3 class="nf__title">{node.title}</h3>
+          <p class="nf__desc">{node.desc}</p>
+        </div>
+        <span class="nf__status" aria-hidden="true"><span class="nf__status-dot"></span>active</span>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .nf { list-style: none; margin: 0 auto; padding: 0; display: flex; flex-direction: column; max-width: 720px; }
+  .nf__row { position: relative; display: flex; gap: clamp(16px, 2.2vw, 26px); align-items: stretch; }
+  /* Sequential reveal: fade + rise + slight scale (overrides the global .reveal). */
+  .nf__row.reveal { transform: translateY(28px) scale(0.97); }
+  .nf__row.reveal.is-visible { transform: none; }
+  .nf__row:not(:last-child) { margin-bottom: clamp(16px, 2.4vw, 26px); }
+
+  .nf__rail { position: relative; flex: 0 0 auto; width: 52px; }
+  .nf__line {
+    position: absolute;
+    top: 52px; left: 26px;
+    transform: translateX(-50%) scaleY(0);
+    transform-origin: top;
+    width: 2px;
+    height: calc(100% + clamp(16px, 2.4vw, 26px) - 52px);
+    background: linear-gradient(180deg, var(--accent-ink), rgba(120, 134, 184, 0.2));
+    border-radius: 2px;
+    transition: transform 0.6s var(--ease) 0.12s;
+    opacity: 0.55;
+  }
+  .nf__row.is-visible .nf__line { transform: translateX(-50%) scaleY(1); }
+
+  .nf__node {
+    position: relative; z-index: 1;
+    width: 52px; height: 52px;
+    border-radius: 15px;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px var(--accent-glow);
+    border: 3px solid #fff;
+  }
+  .nf__pulse {
+    position: absolute; inset: 0; border-radius: 15px;
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  .nf__row.is-visible .nf__pulse { animation: node-pulse 1s ease 0.12s 1; }
+
+  .nf__card {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 16px;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: clamp(16px, 1.8vw, 22px) clamp(18px, 2vw, 26px);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+  }
+  .nf__row.is-visible .nf__card:hover { transform: translateY(-3px); box-shadow: 0 22px 50px rgba(64, 90, 180, 0.14); border-color: var(--card-border-hover); }
+  .nf__num { font-family: var(--font-head); font-weight: 800; font-size: clamp(20px, 2.2vw, 28px); color: var(--accent-ink); opacity: 0.4; line-height: 1; flex: 0 0 auto; }
+  .nf__text { flex: 1; min-width: 0; }
+  .nf__title { font-size: clamp(16px, 1.7vw, 20px); line-height: 1.2; margin-bottom: 4px; }
+  .nf__desc { font-size: 14px; line-height: 1.55; color: var(--body); }
+  .nf__status {
+    flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent-ink); background: var(--accent-bg);
+    border-radius: var(--radius-pill); padding: 5px 10px;
+  }
+  .nf__status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-ink); box-shadow: 0 0 7px var(--accent-glow); }
+  .nf__row.is-visible .nf__status-dot { animation: live-pulse 2.4s ease-in-out infinite 0.6s; }
+
+  @media (max-width: 620px) {
+    .nf__status { display: none; }
+    .nf__card { gap: 12px; padding: 15px 16px; }
+    .nf__num { font-size: 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf__line { transform: translateX(-50%) scaleY(1) !important; }
+    .nf__pulse, .nf__status-dot { animation: none !important; }
+  }
+</style>

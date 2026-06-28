@@ -1,0 +1,96 @@
+---
+/**
+ * Tool stack rendered as connected system nodes (not generic skill chips).
+ * The flagged `primary` tool (n8n) gets an emphasized node; the rest are
+ * compact technical badges with a port dot + icon.
+ */
+import type { Accent, IconPaths } from "../lib/types";
+import Icon from "./Icon.astro";
+
+interface Tool {
+  name: string;
+  accent: Accent;
+  icon: IconPaths;
+  primary?: boolean;
+  note?: string;
+}
+interface Props {
+  label: string;
+  tools: Tool[];
+}
+const { label, tools } = Astro.props;
+const primary = tools.find((t) => t.primary);
+const rest = tools.filter((t) => !t.primary);
+---
+<div class="tn reveal" style="--reveal-delay:0.12s">
+  <div class="tn__label"><span class="tn__label-dot"></span>{label}</div>
+  <div class="tn__wrap">
+    {primary && (
+      <div class:list={["tn__primary", `accent-${primary.accent}`]}>
+        <span class="tn__primary-icon"><Icon paths={primary.icon} size={26} /></span>
+        <div class="tn__primary-text">
+          <span class="tn__primary-name">{primary.name}</span>
+          {primary.note && <span class="tn__primary-note">{primary.note}</span>}
+        </div>
+      </div>
+    )}
+    <div class="tn__grid">
+      {rest.map((tool) => (
+        <div class:list={["tn__node", `accent-${tool.accent}`]}>
+          <span class="tn__port" aria-hidden="true"></span>
+          <span class="tn__node-icon"><Icon paths={tool.icon} size={16} /></span>
+          <span class="tn__node-name">{tool.name}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .tn__label { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+  .tn__label-dot { width: 7px; height: 7px; border-radius: 50%; background: #2fae84; box-shadow: 0 0 0 4px rgba(47, 174, 132, 0.16); }
+
+  .tn__wrap { display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
+
+  /* Primary node (n8n) — emphasized */
+  .tn__primary {
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent-bg) 70%, #fff), #fff);
+    border: 1.5px solid var(--accent-ink);
+    border-radius: 16px;
+    padding: 16px 22px 16px 18px;
+    box-shadow: 0 14px 32px var(--accent-glow);
+    position: relative;
+  }
+  .tn__primary-icon {
+    width: 48px; height: 48px; border-radius: 13px;
+    background: var(--accent-ink); color: #fff;
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    box-shadow: 0 8px 18px var(--accent-glow);
+  }
+  .tn__primary-text { display: flex; flex-direction: column; line-height: 1.2; }
+  .tn__primary-name { font-family: var(--font-head); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; color: var(--ink); }
+  .tn__primary-note { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); }
+
+  /* Secondary nodes — technical badges */
+  .tn__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; flex: 1 1 420px; min-width: 260px; align-content: center; }
+  .tn__node {
+    position: relative;
+    display: flex; align-items: center; gap: 10px;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 11px 13px 11px 16px;
+    box-shadow: 0 8px 20px rgba(64, 90, 180, 0.06);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s, border-color 0.3s;
+  }
+  .tn__node:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(64, 90, 180, 0.14); border-color: var(--accent-glow); }
+  .tn__port { position: absolute; left: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 2px solid var(--accent-ink); }
+  .tn__node-icon { width: 30px; height: 30px; border-radius: 9px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .tn__node-name { font-size: 13.5px; font-weight: 600; color: #2b3566; letter-spacing: -0.005em; }
+
+  @media (max-width: 520px) {
+    .tn__primary { width: 100%; }
+    .tn__grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>

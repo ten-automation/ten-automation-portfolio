@@ -1,0 +1,189 @@
+---
+/**
+ * Sticky, blurred top navigation for the single scroll-driven page.
+ * Links are on-page section anchors; a scrollspy highlights the active one.
+ * The theme toggle stays visible on every breakpoint; the menu collapses to a
+ * toggle on small screens.
+ */
+import { navItems, navCta, site } from "../data/site";
+import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  active?: string;
+}
+const { active } = Astro.props;
+---
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="/#top" class="nav__brand" aria-label={`${site.owner} — home`}>
+      <span class="nav__mark"><span class="nav__mark-dot"></span></span>
+      <span class="nav__lockup">
+        <span class="nav__brand-name">{site.brand}</span>
+        <span class="nav__brand-sub">{site.brandSub}</span>
+      </span>
+    </a>
+
+    <nav id="nav-menu" class="nav__menu" aria-label="Primary">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class:list={["nav__link", { "is-active": active === item.key }]}
+          data-navlink={item.href.split("#")[1] ?? ""}
+        >
+          {item.label}
+        </a>
+      ))}
+      <a href={navCta.href} class="nav__cta">{navCta.label}</a>
+    </nav>
+
+    <div class="nav__actions">
+      <ThemeToggle />
+      <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+        <span class="nav__toggle-bar"></span>
+        <span class="nav__toggle-bar"></span>
+        <span class="nav__toggle-bar"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-block: 13px;
+  }
+  .nav__brand { display: flex; align-items: center; gap: 11px; text-decoration: none; flex: 0 0 auto; }
+  .nav__mark {
+    width: 34px; height: 34px;
+    border-radius: 11px;
+    background: var(--grad-brand);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(88, 113, 230, 0.3);
+    flex: 0 0 auto;
+  }
+  .nav__mark-dot { width: 9px; height: 9px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4); }
+  .nav__lockup { display: flex; flex-direction: column; line-height: 1.05; }
+  .nav__brand-name { font-family: var(--font-head); font-weight: 700; font-size: 17px; color: var(--ink); letter-spacing: -0.01em; }
+  .nav__brand-sub { font-size: 10.5px; font-weight: 500; letter-spacing: 0.04em; color: var(--muted); }
+
+  .nav__menu { display: flex; align-items: center; gap: clamp(4px, 1.2vw, 10px); flex-wrap: wrap; margin-left: auto; }
+  .nav__link {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--body-alt);
+    padding: 9px 12px;
+    border-radius: 9px;
+    transition: color 0.25s ease, background 0.25s ease;
+  }
+  .nav__link:hover { color: var(--ink); }
+  .nav__link.is-active { font-weight: 700; color: var(--ink); background: color-mix(in srgb, var(--accent-bg, rgba(120,134,184,0.1)) 70%, transparent); }
+  .nav__cta {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-left: 6px;
+    background: var(--grad-primary);
+    color: #fff; font-weight: 700; font-size: 14px;
+    padding: 10px 18px; border-radius: var(--radius-pill);
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(88, 113, 230, 0.32);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s;
+  }
+  .nav__cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(88, 113, 230, 0.45); }
+
+  .nav__actions { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+
+  .nav__toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px; height: 44px;
+    border: 1px solid var(--card-border-strong);
+    border-radius: 12px;
+    background: var(--surface);
+    cursor: pointer;
+  }
+  .nav__toggle-bar { display: block; width: 20px; height: 2px; margin-inline: auto; background: var(--ink); border-radius: 2px; transition: transform 0.3s var(--ease), opacity 0.2s ease; }
+  .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(2) { opacity: 0; }
+  .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 900px) {
+    .nav__toggle { display: flex; }
+    .nav__menu {
+      position: absolute;
+      left: 0; right: 0; top: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      margin-left: 0;
+      padding: 14px var(--pad-x) 22px;
+      background: color-mix(in srgb, var(--bg) 97%, transparent);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--hairline);
+      box-shadow: 0 24px 50px rgba(20, 28, 70, 0.18);
+      transform: translateY(-12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s var(--ease), opacity 0.3s ease;
+    }
+    .nav__menu.is-open { transform: none; opacity: 1; pointer-events: auto; }
+    .nav__link { padding: 13px 14px; font-size: 16px; }
+    .nav__cta { margin-left: 0; margin-top: 8px; justify-content: center; padding: 14px 18px; font-size: 15px; }
+  }
+</style>
+
+<script>
+  // Mobile menu open/close.
+  const toggle = document.querySelector<HTMLButtonElement>(".nav__toggle");
+  const menu = document.querySelector<HTMLElement>("#nav-menu");
+  if (toggle && menu) {
+    toggle.addEventListener("click", () => {
+      const open = menu.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+    menu.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => {
+        menu.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }),
+    );
+  }
+
+  // Scrollspy: highlight the nav link for the section currently in view.
+  // Only runs on the homepage, where the section anchors exist.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-navlink]"));
+  const targets = links
+    .map((l) => l.dataset.navlink)
+    .filter((id): id is string => Boolean(id))
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => Boolean(el));
+
+  if (targets.length && "IntersectionObserver" in window) {
+    const setActive = (id: string) => {
+      links.forEach((l) => l.classList.toggle("is-active", l.dataset.navlink === id));
+    };
+    const spy = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: [0, 0.25, 0.5] },
+    );
+    targets.forEach((t) => spy.observe(t));
+  }
+</script>

@@ -1,0 +1,371 @@
+---
+/**
+ * Featured automation systems — the proof section. Every system is its own large
+ * product-showcase card (alternating sides), revealed one by one on scroll. Each
+ * card holds the copy, an animated flow preview, an in-card demo video area, and
+ * a CTA footer. Videos lazy-load on click; an empty URL shows a "Demo coming
+ * soon" placeholder (never a broken embed).
+ */
+import type { Accent, IconPaths } from "../lib/types";
+import Icon from "./Icon.astro";
+
+interface FlowNode {
+  label: string;
+  tag: string;
+  accent: Accent;
+}
+interface System {
+  slug: string;
+  title: string;
+  category: string;
+  accent: Accent;
+  icon: IconPaths;
+  demoVideoUrl?: string;
+  description: string;
+  problem: string;
+  approach: string;
+  tags: string[];
+  flowTitle: string;
+  flow: FlowNode[];
+}
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  systems: System[];
+  bookingHref: string;
+}
+const { id, eyebrow, title, intro, systems, bookingHref } = Astro.props;
+
+/** Normalise a demo URL into an embeddable source. Supports YouTube, Vimeo, Loom, and direct files. */
+type Embed = { kind: "iframe" | "file" | "none"; src: string };
+function videoEmbed(raw?: string): Embed {
+  const url = (raw ?? "").trim();
+  if (!url) return { kind: "none", src: "" };
+  let m: RegExpMatchArray | null;
+  if ((m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/)))
+    return { kind: "iframe", src: `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&rel=0` };
+  if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)))
+    return { kind: "iframe", src: `https://player.vimeo.com/video/${m[1]}?autoplay=1` };
+  if ((m = url.match(/loom\.com\/(?:share|embed)\/([\w-]+)/)))
+    return { kind: "iframe", src: `https://www.loom.com/embed/${m[1]}?autoplay=1` };
+  if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)) return { kind: "file", src: url };
+  return { kind: "iframe", src: url };
+}
+---
+<section class="section fsys" id={id}>
+  <div class="container">
+    <div class="section-head section-head--center section-head--wide reveal">
+      <span class="eyebrow eyebrow--accent">{eyebrow}</span>
+      <h2 class="display">{title}</h2>
+      <p class="lead" style="margin-top:14px">{intro}</p>
+    </div>
+
+    <div class="showcases">
+      {systems.map((s, i) => {
+        const v = videoEmbed(s.demoVideoUrl);
+        const hasVideo = v.kind !== "none";
+        return (
+          <article class:list={["showcase", `accent-${s.accent}`, "reveal-scale", { "showcase--rev": i % 2 === 1 }]}>
+            <div class="showcase__main">
+              <div class="showcase__text">
+                <div class="showcase__head">
+                  <span class="showcase__icon"><Icon paths={s.icon} size={22} /></span>
+                  <div>
+                    <span class="showcase__index">System {String(i + 1).padStart(2, "0")}</span>
+                    <span class="showcase__cat">{s.category}</span>
+                  </div>
+                </div>
+                <h3 class="showcase__title">{s.title}</h3>
+                <p class="showcase__desc">{s.description}</p>
+                <dl class="sysmeta">
+                  <div class="sysmeta__row"><dt class="sysmeta__k">Problem</dt><dd class="sysmeta__v">{s.problem}</dd></div>
+                  <div class="sysmeta__row"><dt class="sysmeta__k">Approach</dt><dd class="sysmeta__v">{s.approach}</dd></div>
+                </dl>
+                <div class="systags">
+                  {s.tags.map((t) => <span class="systag">{t}</span>)}
+                </div>
+              </div>
+
+              <div class="showcase__preview" data-flow>
+                <div class="fp__head">
+                  <span class="fp__label">{s.flowTitle}</span>
+                  <span class="fp__live"><span class="fp__live-dot"></span>Live flow</span>
+                </div>
+                <ol class="fp__list">
+                  {s.flow.map((node, ni) => (
+                    <li class:list={["fp__item", `accent-${node.accent}`]} style={`--i:${ni}`}>
+                      <span class="fp__node">
+                        <span class="fp__node-dot"></span>
+                        {ni < s.flow.length - 1 && <span class="fp__conn" aria-hidden="true"><span class="fp__spark"></span></span>}
+                      </span>
+                      <span class="fp__row">
+                        <span class="fp__name">{node.label}</span>
+                        <span class="fp__chip">{node.tag}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+
+            <!-- In-card demo video area -->
+            <div class="showcase__video">
+              <span class="showcase__video-label">Demo video</span>
+              {hasVideo ? (
+                <div class="video" data-video data-kind={v.kind} data-src={v.src}>
+                  <button type="button" class="video__facade" aria-label={`Play the demo video for ${s.title}`}>
+                    <span class="video__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" /></svg></span>
+                    <span class="video__facade-text">Watch the demo</span>
+                  </button>
+                </div>
+              ) : (
+                <div class="video video--ph">
+                  <span class="video__ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3" /><polygon points="10 9 16 12 10 15 10 9" /></svg></span>
+                  <span class="video__ph-text">Demo coming soon</span>
+                </div>
+              )}
+            </div>
+
+            <div class="showcase__footer">
+              <a class="sys-cta__primary" href={`/projects/${s.slug}`}>View System<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+              {hasVideo
+                ? <button type="button" class="sys-cta__ghost" data-watch>Watch Demo</button>
+                : <span class="sys-cta__soon">Demo coming soon</span>}
+              <a class="sys-cta__book" href={bookingHref}>Book Discovery Call</a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .showcases { display: flex; flex-direction: column; gap: clamp(24px, 3.2vw, 40px); }
+
+  .showcase {
+    display: flex; flex-direction: column; gap: clamp(20px, 2.6vw, 30px);
+    background: var(--surface);
+    border: 1px solid var(--card-border-strong);
+    border-radius: 28px;
+    padding: clamp(22px, 3vw, 44px);
+    box-shadow: var(--shadow-raised);
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .showcase.is-visible:hover { transform: translateY(-4px); box-shadow: 0 34px 76px rgba(64, 90, 180, 0.2); }
+
+  .showcase__main { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: clamp(24px, 3.2vw, 48px); align-items: center; }
+  .showcase--rev .showcase__text { order: 2; }
+  .showcase--rev .showcase__preview { order: 1; }
+
+  /* ---- Text side ---- */
+  .showcase__head { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; }
+  .showcase__icon {
+    width: 50px; height: 50px; border-radius: 14px; flex: 0 0 auto;
+    background: var(--accent-bg); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 18px var(--accent-glow);
+  }
+  .showcase__index { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .showcase__cat { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); }
+  .showcase__title { font-size: clamp(23px, 2.6vw, 33px); line-height: 1.12; margin-bottom: 13px; }
+  .showcase__desc { font-size: 15px; line-height: 1.6; color: var(--body); margin-bottom: 18px; }
+
+  .sysmeta { margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  .sysmeta__row { display: grid; grid-template-columns: 80px 1fr; gap: 12px; align-items: start; }
+  .sysmeta__k { margin: 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); padding-top: 2px; }
+  .sysmeta__v { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--body); }
+
+  .systags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .systag {
+    font-size: 12px; font-weight: 600; color: var(--accent-ink);
+    background: var(--accent-bg); border: 1px solid var(--accent-glow);
+    border-radius: 8px; padding: 5px 10px;
+  }
+
+  /* ---- In-card demo video ---- */
+  .showcase__video-label { display: block; margin-bottom: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .video {
+    position: relative; aspect-ratio: 16 / 9; width: 100%;
+    border-radius: 18px; overflow: hidden;
+    border: 1px solid var(--lav-border);
+    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.14);
+    background: linear-gradient(155deg, var(--lav-from), var(--lav-to));
+  }
+  .video :global(.video__media) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #000; }
+  .video__facade {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    background:
+      radial-gradient(420px 220px at 50% 38%, color-mix(in srgb, var(--lilac-glow) 55%, transparent), transparent 70%),
+      linear-gradient(155deg, var(--lav-from), var(--lav-to));
+    color: var(--lav-ink); font-family: var(--font-body);
+    transition: background 0.3s var(--ease);
+  }
+  .video__facade:hover { background: linear-gradient(155deg, var(--lav-strong-from), var(--lav-strong-to)); }
+  .video__play {
+    width: 64px; height: 64px; border-radius: 50%; flex: 0 0 auto;
+    background: var(--grad-primary); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 16px 34px rgba(88, 113, 230, 0.45);
+    transition: transform 0.3s var(--ease);
+  }
+  .video__facade:hover .video__play { transform: scale(1.08); }
+  .video__play svg { width: 24px; height: 24px; margin-left: 3px; }
+  .video__facade-text { font-weight: 700; font-size: 14.5px; letter-spacing: 0.01em; }
+
+  .video--ph {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    background: linear-gradient(160deg, var(--lav-soft), var(--surface-2));
+    border: 1px dashed var(--lav-border); color: var(--muted);
+  }
+  .video__ph-icon {
+    width: 56px; height: 56px; border-radius: 16px; flex: 0 0 auto;
+    background: var(--lilac-bg); color: var(--lilac-ink);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .video__ph-icon svg { width: 28px; height: 28px; }
+  .video__ph-text { font-family: var(--font-head); font-weight: 700; font-size: 14.5px; color: var(--body); }
+
+  /* ---- CTA footer ---- */
+  .showcase__footer {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    padding-top: clamp(16px, 2vw, 22px); border-top: 1px solid var(--hairline);
+  }
+  .sys-cta__primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--grad-primary); color: #fff; font-weight: 700; font-size: 14px;
+    padding: 11px 20px; border-radius: var(--radius-pill); text-decoration: none; border: 0; cursor: pointer;
+    box-shadow: 0 10px 24px rgba(88, 113, 230, 0.32);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .sys-cta__primary svg { width: 15px; height: 15px; }
+  .sys-cta__primary:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(88, 113, 230, 0.46); }
+  .sys-cta__ghost, .sys-cta__book {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-weight: 600; font-size: 14px; padding: 11px 18px; cursor: pointer;
+    border-radius: var(--radius-pill); text-decoration: none; font-family: var(--font-body);
+    border: 1.5px solid var(--card-border-strong); color: var(--ink); background: var(--surface);
+    transition: transform 0.3s var(--ease), border-color 0.3s ease, color 0.3s ease;
+  }
+  .sys-cta__book { border-color: var(--lav-border); color: var(--lav-ink); background: var(--lav-soft); }
+  .sys-cta__ghost:hover, .sys-cta__book:hover { transform: translateY(-3px); border-color: var(--card-border-hover); }
+  .sys-cta__soon {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-weight: 600; font-size: 13px; padding: 11px 16px;
+    border-radius: var(--radius-pill);
+    color: var(--muted); background: var(--surface-2); border: 1px dashed var(--card-border-strong);
+  }
+  .sys-cta__soon::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--caution-border); }
+
+  /* ---- Animated flow preview ---- */
+  .showcase__preview {
+    position: relative;
+    background: linear-gradient(155deg, var(--lav-from), var(--lav-to));
+    border: 1px solid var(--lav-border);
+    border-radius: 20px;
+    padding: clamp(18px, 2vw, 26px);
+    box-shadow: 0 20px 50px rgba(64, 90, 180, 0.16);
+  }
+  .fp__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .fp__label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lav-ink); }
+  .fp__live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--mint-ink); }
+  .fp__live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint-ink); animation: live-pulse 2.4s ease-in-out infinite; }
+
+  .fp__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .fp__item {
+    position: relative; display: flex; align-items: center; gap: 14px; padding-block: 7px;
+    opacity: 0; transform: translateX(10px);
+  }
+  .showcase.is-visible .fp__item {
+    opacity: 1; transform: none;
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    transition-delay: calc(var(--i) * 0.16s + 0.2s);
+  }
+  .fp__node {
+    position: relative; z-index: 1; flex: 0 0 auto;
+    width: 34px; height: 34px; border-radius: 11px;
+    background: var(--surface); border: 1px solid var(--accent-glow);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 14px var(--accent-glow);
+  }
+  .fp__node-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-ink); box-shadow: 0 0 8px var(--accent-glow); }
+  .fp__conn {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 24px; background: var(--card-border-strong); border-radius: 2px; overflow: hidden;
+  }
+  .fp__spark {
+    position: absolute; left: 0; top: -24px; width: 2px; height: 24px;
+    background: linear-gradient(180deg, transparent, var(--accent-ink));
+    animation: pv-spark 5.4s linear infinite; animation-play-state: paused;
+    animation-delay: calc(var(--i) * 0.5s);
+  }
+  .showcase.is-visible .fp__spark { animation-play-state: running; }
+  .fp__row {
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
+    background: var(--surface-translucent); border: 1px solid var(--accent-glow);
+    border-radius: 12px; padding: 9px 13px;
+  }
+  .fp__name { font-weight: 600; font-size: 13.5px; color: var(--ink); }
+  .fp__chip { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent-ink); background: var(--accent-bg); border-radius: 6px; padding: 3px 7px; }
+
+  @keyframes pv-spark { 0% { top: -24px; } 12%, 100% { top: 24px; } }
+
+  @media (max-width: 900px) {
+    .showcase__main { grid-template-columns: 1fr; gap: clamp(20px, 3vw, 28px); }
+    .showcase--rev .showcase__text, .showcase__text { order: 1; }
+    .showcase--rev .showcase__preview, .showcase__preview { order: 2; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fp__item { opacity: 1 !important; transform: none !important; }
+    .fp__spark, .fp__live-dot { animation: none !important; }
+  }
+</style>
+
+<script>
+  // Lazy-load demo videos: the iframe / <video> is only created on the first
+  // interaction (facade click, or the "Watch Demo" footer button).
+  (() => {
+    const loadVideo = (wrap: HTMLElement) => {
+      if (wrap.dataset.loaded) return;
+      wrap.dataset.loaded = "1";
+      const kind = wrap.dataset.kind;
+      const src = wrap.dataset.src ?? "";
+      wrap.innerHTML = "";
+      if (kind === "file") {
+        const vid = document.createElement("video");
+        vid.className = "video__media";
+        vid.src = src;
+        vid.controls = true;
+        vid.autoplay = true;
+        vid.playsInline = true;
+        wrap.appendChild(vid);
+      } else {
+        const frame = document.createElement("iframe");
+        frame.className = "video__media";
+        frame.src = src;
+        frame.loading = "lazy";
+        frame.allow = "autoplay; fullscreen; picture-in-picture";
+        frame.setAttribute("allowfullscreen", "");
+        frame.setAttribute("title", "Demo video");
+        wrap.appendChild(frame);
+      }
+    };
+
+    document.querySelectorAll<HTMLElement>("[data-video]").forEach((wrap) => {
+      wrap.querySelector(".video__facade")?.addEventListener("click", () => loadVideo(wrap));
+    });
+
+    document.querySelectorAll<HTMLButtonElement>("[data-watch]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const wrap = btn.closest(".showcase")?.querySelector<HTMLElement>("[data-video]");
+        if (!wrap) return;
+        wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+        loadVideo(wrap);
+      });
+    });
+  })();
+</script>
