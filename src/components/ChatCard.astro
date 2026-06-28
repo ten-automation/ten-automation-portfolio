@@ -51,10 +51,10 @@ const noteAccent = data.noteAccent ?? data.accent;
 <style>
   .chat {
     display: flex; flex-direction: column;
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--accent-glow);
     border-radius: 22px; overflow: hidden;
-    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1);
+    box-shadow: var(--shadow-card);
   }
   .chat__head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--hairline); }
   .chat__head--wa { background: linear-gradient(120deg, #0f7a55, #1fa37c); border-bottom: 0; }
@@ -66,7 +66,7 @@ const noteAccent = data.noteAccent ?? data.accent;
   .chat__head--wa .chat__avatar { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); color: #fff; }
   .chat__id { display: flex; flex-direction: column; line-height: 1.2; flex: 1; }
   .chat__channel { font-family: var(--font-head); font-weight: 700; font-size: 13.5px; color: var(--ink); }
-  .chat__sub { font-size: 11px; color: #7c86b8; font-weight: 600; }
+  .chat__sub { font-size: 11px; color: var(--muted); font-weight: 600; }
   .chat__head--wa .chat__channel { color: #fff; }
   .chat__head--wa .chat__sub { color: rgba(255, 255, 255, 0.8); }
   .chat__tag {
@@ -75,7 +75,7 @@ const noteAccent = data.noteAccent ?? data.accent;
     border-radius: var(--radius-pill); padding: 6px 11px;
   }
 
-  .chat__body { display: flex; flex-direction: column; gap: 9px; padding: 18px; background: #f9faff; flex: 1; }
+  .chat__body { display: flex; flex-direction: column; gap: 9px; padding: 18px; background: var(--surface-2); flex: 1; }
   .chat__body--wa { background: #f4f6f3; gap: 12px; min-height: 200px; }
   .chat__bubble { font-size: 13.5px; line-height: 1.45; padding: 10px 13px; max-width: 84%; }
   .chat__bubble--out {
@@ -84,7 +84,7 @@ const noteAccent = data.noteAccent ?? data.accent;
     border-radius: 14px 14px 4px 14px;
     box-shadow: 0 6px 16px rgba(88, 113, 230, 0.22);
   }
-  .chat__bubble--in { align-self: flex-start; background: #eef1fb; color: #2b3566; border-radius: 14px 14px 14px 4px; }
+  .chat__bubble--in { align-self: flex-start; background: var(--surface-3); color: var(--ink); border-radius: 14px 14px 14px 4px; }
   .chat__bubble--wa {
     background: #d8f6c8; color: #1c2e22;
     border-radius: 16px 16px 4px 16px;
@@ -94,7 +94,7 @@ const noteAccent = data.noteAccent ?? data.accent;
   .chat__file {
     align-self: flex-end; max-width: 84%;
     display: flex; align-items: center; gap: 11px;
-    background: #fff; border: 1px solid var(--card-border);
+    background: var(--surface); border: 1px solid var(--card-border);
     border-radius: 14px; padding: 11px 13px;
     box-shadow: 0 4px 12px rgba(64, 90, 180, 0.08);
   }
@@ -104,7 +104,7 @@ const noteAccent = data.noteAccent ?? data.accent;
     display: flex; align-items: flex-end; justify-content: center; padding-bottom: 3px;
     flex: 0 0 auto; font-size: 8px; font-weight: 800; color: #d9534f; letter-spacing: 0.04em;
   }
-  .chat__file-name { font-size: 12.5px; font-weight: 600; color: #2b3566; }
+  .chat__file-name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
   .chat__file-size { font-size: 10.5px; color: var(--muted); }
   .chat__file-meta { display: flex; flex-direction: column; min-width: 0; }
 

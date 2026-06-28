@@ -43,11 +43,11 @@ const { steps } = Astro.props;
 <style>
   .pipeline {
     position: relative;
-    background: linear-gradient(180deg, #ffffff, #fbfcff);
-    border: 1px solid rgba(170, 185, 246, 0.25);
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--card-border);
     border-radius: 28px;
     padding: clamp(24px, 3.6vw, 56px) clamp(18px, 3vw, 48px);
-    box-shadow: 0 22px 60px rgba(64, 90, 180, 0.09);
+    box-shadow: var(--shadow-raised);
   }
   .pipeline__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; max-width: 760px; }
   .pipeline__row { position: relative; display: flex; gap: clamp(16px, 2.2vw, 28px); align-items: stretch; }
@@ -61,7 +61,7 @@ const { steps } = Astro.props;
     transform-origin: top;
     width: 2px;
     height: calc(100% + clamp(22px, 3vw, 36px) - 56px);
-    background: linear-gradient(180deg, rgba(120, 134, 184, 0.42), rgba(120, 134, 184, 0.14));
+    background: linear-gradient(180deg, var(--wire), color-mix(in srgb, var(--wire) 30%, transparent));
     border-radius: 2px;
     transition: transform 0.6s var(--ease) 0.15s;
   }
@@ -74,13 +74,13 @@ const { steps } = Astro.props;
     background: var(--accent-bg); color: var(--accent-ink);
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 12px 26px var(--accent-glow);
-    border: 3px solid #fff;
+    border: 3px solid var(--surface);
   }
   .pipeline__row.is-visible .pipeline__chip { animation: node-pulse 0.9s ease 0.15s 1; }
 
   .pipeline__card {
     flex: 1; min-width: 0;
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--card-border);
     border-radius: 20px;
     padding: clamp(20px, 2.2vw, 28px);

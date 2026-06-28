@@ -61,13 +61,13 @@ const checkPath = "M20 6 9 17l-5-5";
 <style>
   .hr { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: stretch; }
   .hr__card {
-    background: linear-gradient(150deg, #ffffff 58%, #f1f6ff);
+    background: linear-gradient(150deg, var(--surface) 58%, var(--peri-bg));
     border: 1px solid var(--card-border-strong);
     border-radius: 24px;
     padding: clamp(24px, 2.8vw, 36px);
-    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.1);
+    box-shadow: var(--shadow-card);
   }
-  .hr__card--human { background: linear-gradient(150deg, #ffffff 58%, #f1fbf6); border-color: var(--benefit-border); }
+  .hr__card--human { background: linear-gradient(150deg, var(--surface) 58%, var(--mint-bg)); border-color: var(--benefit-border); }
   .hr__head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
   .hr__icon { width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
   .hr__icon--auto { background: var(--peri-bg); color: var(--peri-ink); box-shadow: 0 8px 18px var(--peri-glow); }
@@ -77,10 +77,10 @@ const checkPath = "M20 6 9 17l-5-5";
   .hr__item {
     display: flex; align-items: center; gap: 11px;
     border-radius: 13px; padding: 13px 15px;
-    font-weight: 600; font-size: 14.5px; color: #2b3566;
+    font-weight: 600; font-size: 14.5px; color: var(--ink);
   }
-  .hr__item--auto { background: #f7f9ff; border: 1px solid rgba(170, 185, 246, 0.28); }
-  .hr__item--human { background: #f4fbf8; border: 1px solid rgba(143, 226, 198, 0.4); }
+  .hr__item--auto { background: color-mix(in srgb, var(--peri-bg) 45%, var(--surface)); border: 1px solid var(--peri-glow); }
+  .hr__item--human { background: color-mix(in srgb, var(--mint-bg) 45%, var(--surface)); border: 1px solid var(--benefit-border); }
   .hr__check { width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
   .hr__check--auto { background: var(--peri-bg); color: var(--peri-ink); }
   .hr__check--human { background: var(--mint-bg); color: var(--mint-ink); }

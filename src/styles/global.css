@@ -42,6 +42,15 @@
   --card-border-strong: rgba(170, 185, 246, 0.34);
   --card-border-hover: rgba(157, 180, 245, 0.6);
 
+  /* Decorative connector/wire lines + skeleton mock bars */
+  --wire: #d6def0;
+  --skeleton: #e3e6f1;
+
+  /* Form fields (inputs / selects / textareas) */
+  --field-bg: #f8f9ff;
+  --field-border: #e0e5f4;
+  --field-bg-focus: #ffffff;
+
   /* Dark panel */
   --panel-from: #1b2350;
   --panel-to: #2a3570;
@@ -151,6 +160,13 @@
   --card-border-strong: rgba(150, 170, 240, 0.2);
   --card-border-hover: rgba(157, 180, 245, 0.5);
 
+  --wire: rgba(160, 176, 230, 0.26);
+  --skeleton: rgba(176, 190, 240, 0.16);
+
+  --field-bg: #10142e;
+  --field-border: rgba(150, 170, 240, 0.22);
+  --field-bg-focus: #141938;
+
   /* Lift accents: lighter ink + translucent backgrounds on dark surfaces */
   --peri-ink: #9db4f5; --peri-bg: rgba(99, 124, 255, 0.16); --peri-glow: rgba(99, 124, 255, 0.34);
   --sky-ink: #6fc1f5;  --sky-bg: rgba(60, 150, 224, 0.16);  --sky-glow: rgba(60, 150, 224, 0.32);
@@ -176,7 +192,11 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Offset in-page anchor jumps so section headings clear the sticky nav. */
+  scroll-padding-top: 88px;
+}
 
 body {
   margin: 0;
@@ -217,7 +237,7 @@ p { margin: 0; }
   left: -999px;
   top: 8px;
   z-index: 999;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   padding: 10px 16px;
   border-radius: 10px;
@@ -252,7 +272,7 @@ p { margin: 0; }
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #7c86b8;
+  color: var(--muted);
   margin-bottom: 14px;
 }
 .eyebrow--accent { color: var(--accent-ink); }
@@ -378,7 +398,7 @@ h2.display { font-size: clamp(27px, 3.6vw, 43px); font-weight: 800; line-height:
 }
 .pill__label {
   font-size: 12px; font-weight: 700; letter-spacing: 0.14em;
-  text-transform: uppercase; color: #7c86b8;
+  text-transform: uppercase; color: var(--muted);
 }
 
 .benefit-pill {
@@ -396,7 +416,7 @@ h2.display { font-size: clamp(27px, 3.6vw, 43px); font-weight: 800; line-height:
 }
 .benefit-pill__icon {
   width: 18px; height: 18px; border-radius: 50%;
-  background: #fff; color: var(--mint-ink);
+  background: var(--surface); color: var(--mint-ink);
   display: flex; align-items: center; justify-content: center;
   flex: 0 0 auto;
 }

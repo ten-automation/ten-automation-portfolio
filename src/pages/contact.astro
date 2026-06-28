@@ -105,25 +105,25 @@ const configured = Boolean(site.formEndpoint) && !site.formEndpoint.includes("yo
   .contact { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(24px, 3vw, 40px); align-items: start; }
   @media (max-width: 880px) { .contact { grid-template-columns: 1fr; } }
 
-  .cform { background: #fff; border: 1px solid var(--card-border-strong); border-radius: 26px; padding: clamp(24px, 3vw, 40px); box-shadow: 0 24px 60px rgba(64, 90, 180, 0.1); }
+  .cform { background: var(--surface); border: 1px solid var(--card-border-strong); border-radius: 26px; padding: clamp(24px, 3vw, 40px); box-shadow: var(--shadow-raised); }
   .cform__heading { font-size: clamp(20px, 2.2vw, 26px); margin-bottom: 22px; }
   .cform__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 540px) { .cform__grid { grid-template-columns: 1fr; } }
   .cfield { display: flex; flex-direction: column; gap: 7px; }
   .cfield--full { grid-column: 1 / -1; }
-  .cfield__label { font-size: 13.5px; font-weight: 600; color: #2b3566; }
+  .cfield__label { font-size: 13.5px; font-weight: 600; color: var(--ink); }
   .cfield__req { color: var(--lilac-ink); margin-left: 2px; }
   .cfield input, .cfield textarea, .cfield select {
     width: 100%; font-family: var(--font-body); font-size: 14.5px; color: var(--ink);
-    background: #f8f9ff; border: 1.5px solid #e0e5f4; border-radius: 12px; padding: 13px 15px;
+    background: var(--field-bg); border: 1.5px solid var(--field-border); border-radius: 12px; padding: 13px 15px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
   .cfield textarea { resize: vertical; min-height: 110px; }
-  .cfield input::placeholder, .cfield textarea::placeholder { color: #a7afcf; }
-  .cfield input:focus, .cfield textarea:focus, .cfield select:focus { outline: none; border-color: #9db4f5; background: #fff; box-shadow: 0 0 0 4px rgba(157, 180, 245, 0.22); }
+  .cfield input::placeholder, .cfield textarea::placeholder { color: var(--muted); }
+  .cfield input:focus, .cfield textarea:focus, .cfield select:focus { outline: none; border-color: var(--card-border-hover); background: var(--field-bg-focus); box-shadow: 0 0 0 4px var(--peri-glow); }
   .cfield input[aria-invalid="true"], .cfield textarea[aria-invalid="true"], .cfield select[aria-invalid="true"] { border-color: #e08aa0; box-shadow: 0 0 0 4px rgba(224, 138, 160, 0.18); }
   .cfield__select { position: relative; }
-  .cfield__select::after { content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; border-right: 2px solid #7c86b8; border-bottom: 2px solid #7c86b8; transform: translateY(-65%) rotate(45deg); pointer-events: none; }
+  .cfield__select::after { content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translateY(-65%) rotate(45deg); pointer-events: none; }
   .cfield select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 38px; }
 
   .cform__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
@@ -136,7 +136,7 @@ const configured = Boolean(site.formEndpoint) && !site.formEndpoint.includes("yo
 
   .channels { display: flex; flex-direction: column; gap: 12px; }
   .channels__heading { font-size: 17px; margin-bottom: 6px; }
-  .channel { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid var(--card-border-strong); border-radius: 16px; padding: 16px 18px; text-decoration: none; box-shadow: 0 12px 30px rgba(64, 90, 180, 0.07); transition: transform 0.3s var(--ease), box-shadow 0.3s, border-color 0.3s; }
+  .channel { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--card-border-strong); border-radius: 16px; padding: 16px 18px; text-decoration: none; box-shadow: var(--shadow-card); transition: transform 0.3s var(--ease), box-shadow 0.3s, border-color 0.3s; }
   .channel:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(64, 90, 180, 0.14); border-color: var(--card-border-hover); }
   .channel__icon { width: 42px; height: 42px; border-radius: 12px; background: var(--accent-bg); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; box-shadow: 0 8px 18px var(--accent-glow); }
   .channel__meta { display: flex; flex-direction: column; flex: 1; min-width: 0; }

@@ -55,20 +55,20 @@ const { data, title = "See it in action." } = Astro.props;
   .demo__video, .demo__video-embed {
     position: relative; border-radius: 24px; overflow: hidden;
     aspect-ratio: 16 / 9; margin-bottom: 24px;
-    box-shadow: 0 18px 44px rgba(64, 90, 180, 0.08);
+    box-shadow: var(--shadow-card);
   }
   .demo__video-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
   .demo__video {
-    border: 1.5px dashed #c4cef0;
-    background: repeating-linear-gradient(135deg, #eef1fb, #eef1fb 14px, #f5f7fd 14px, #f5f7fd 28px);
+    border: 1.5px dashed var(--card-border-strong);
+    background: repeating-linear-gradient(135deg, var(--surface-2), var(--surface-2) 14px, var(--surface-3) 14px, var(--surface-3) 28px);
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
   }
   .demo__badge {
     position: absolute; top: 18px; left: 18px;
     display: inline-flex; align-items: center; gap: 7px;
-    background: #fff; border: 1px solid var(--card-border);
+    background: var(--surface); border: 1px solid var(--card-border);
     border-radius: var(--radius-pill); padding: 6px 12px;
-    font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; color: #7c86b8;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; color: var(--muted);
   }
   .demo__badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #f0b450; box-shadow: 0 0 0 3px rgba(240, 180, 80, 0.2); }
   .demo__play {
@@ -80,17 +80,17 @@ const { data, title = "See it in action." } = Astro.props;
   }
   .demo__play svg { margin-left: 4px; }
   .demo__caption { text-align: center; }
-  .demo__caption-title { font-family: var(--font-head); font-weight: 700; font-size: 16px; color: #2b3566; }
+  .demo__caption-title { font-family: var(--font-head); font-weight: 700; font-size: 16px; color: var(--ink); }
   .demo__hint { font-family: var(--font-body); font-size: 11.5px; letter-spacing: 0.04em; color: var(--muted); margin-top: 5px; }
 
   .demo__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
   .demo__slot {
     position: relative; border-radius: 20px;
-    border: 1.5px dashed #c4cef0;
-    background: repeating-linear-gradient(135deg, #eef1fb, #eef1fb 12px, #f5f7fd 12px, #f5f7fd 24px);
+    border: 1.5px dashed var(--card-border-strong);
+    background: repeating-linear-gradient(135deg, var(--surface-2), var(--surface-2) 12px, var(--surface-3) 12px, var(--surface-3) 24px);
     min-height: 230px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px;
-    box-shadow: 0 14px 36px rgba(64, 90, 180, 0.07);
+    box-shadow: var(--shadow-card);
   }
   .demo__slot-icon {
     width: 54px; height: 54px; border-radius: 15px;
@@ -98,5 +98,5 @@ const { data, title = "See it in action." } = Astro.props;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 10px 22px var(--accent-glow);
   }
-  .demo__video-embed .demo__caption-title { color: #2b3566; }
+  .demo__video-embed .demo__caption-title { color: var(--ink); }
 </style>

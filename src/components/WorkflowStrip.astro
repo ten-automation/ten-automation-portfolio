@@ -42,11 +42,11 @@ const { nodes, label, center = false, animated = false } = Astro.props;
 
 <style>
   .strip {
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--hairline);
     border-radius: var(--radius-card);
     padding: 16px clamp(16px, 2.4vw, 28px);
-    box-shadow: 0 14px 36px rgba(91, 113, 170, 0.1);
+    box-shadow: var(--shadow-card);
     display: flex;
     align-items: center;
     gap: clamp(10px, 1.6vw, 18px);
@@ -61,7 +61,7 @@ const { nodes, label, center = false, animated = false } = Astro.props;
   .strip--animated .strip__live { animation: live-pulse 2.4s ease-in-out infinite; }
   .strip__label span:last-child {
     font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; color: #7c86b8;
+    text-transform: uppercase; color: var(--muted);
   }
   .strip__flow {
     flex: 1 1 300px;
@@ -86,7 +86,7 @@ const { nodes, label, center = false, animated = false } = Astro.props;
     position: relative;
     flex: 1 1 14px;
     height: 2px;
-    background: #d6def0;
+    background: var(--wire);
     margin: 0 3px;
     border-radius: 2px;
     overflow: hidden;
